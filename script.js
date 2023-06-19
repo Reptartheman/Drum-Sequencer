@@ -3,12 +3,42 @@ const audioContext = new AudioContext();
 let futureTickTime, 
     counter = 1,
     metronome,
+    metronomeVolume = 1,
     tempo = 90,
     secondsPerBeat = 60 / tempo,
     counterTimeValue = (secondsPerBeat / 4),
     oscFrequency = 100,
     osc;
 
+let sounds = audioBatchLoader({
+    kick: './sounds/Kick.wav',
+    snare: './sounds/Snare.wav',
+    hihat: './sounds/HiHat.wav',
+    shaker: './sounds/Shaker.wav'
+});
+
+
+let kickTrack = [1, 9, 11],
+    snareTrack = [5,13],
+    hiHatTrack = [13, 14, 15, 16],
+    shakerTrack = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16];
+
+
+function scheduleSound (trackArray, sound, count, time) {
+    for (let i = 0; i < trackArray.length; i+= 1) {
+        if (count === trackArray[i]) {
+            sound.play(time);
+        }
+    }
+}
+/* This is where I get confused with function parameters... 
+    - The scheduleSound function takes in four arguments, one of those being 'time'.
+    - We reference time in the sound.play(time) function.
+    - I understand that parameters are just variables but I thought when we call the function, that's where we set the arguments up???
+
+
+*/
 function playMetronome(time, playing) {
     if (playing) {
         osc = audioContext.createOscillator();
@@ -36,7 +66,15 @@ function playTick() {
 
 function scheduler() {
     if (futureTickTime < audioContext.currentTime + 0.1) {
-        playMetronome(futureTickTime, true);
+
+        scheduleSound(kickTrack, sounds.kick, counter, futureTickTime
+            - audioContext.currentTime);
+                scheduleSound(snareTrack, sounds.snare, counter, futureTickTime
+            - audioContext.currentTime);
+                scheduleSound(hiHatTrack, sounds.hihat, counter, futureTickTime
+            - audioContext.currentTime);
+                scheduleSound(shakerTrack, sounds.shaker, counter,
+            futureTickTime - audioContext.currentTime);
         playTick();
     }
 }
