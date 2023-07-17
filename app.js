@@ -32,13 +32,7 @@ function scheduleSound (trackArray, sound, count, time) {
         }
     }
 }
-/* This is where I get confused with function parameters... 
-    - The scheduleSound function takes in four arguments, one of those being 'time'.
-    - We reference time in the sound.play(time) function.
-    - I understand that parameters are just variables but I thought when we call the function, that's where we set the arguments up???
 
-
-*/
 function playMetronome(time, playing) {
     if (playing) {
         osc = audioContext.createOscillator();

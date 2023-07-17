@@ -1,17 +1,29 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="UTF-8"> 
+<title>app</title> 
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>app</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/
-jquery.min.js"></script>
-<!-- <script src="js/audiolib.js"></script> -->
-<script src="./script.js"></script>
-</head>
-<!--___________________________________________BEGIN APP-->
-<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>  
+<script src="./audiolib.js"></script> 
+<script src="./app.js"></script> 
+<link rel="stylesheet"href="./assets/style.css"> 
+</head> 
+<!--_______________________________________________BEGIN APP--> 
+<body> 
+<div class="app-grid"> 
+</div> 
+<button class="play-stop-button"> 
+Play/Stop 
+</button> 
+<button class="metronome">Toggle metronome</button> 
+<div id="tempoBox">Tempo:<span id="showTempo">120</span>BPM 
+<input id="tempo"type="range"min="30.0"max="160.0" 
+step="1"value="120"></div> 
 
-</body>
-<!--____________________________________________END APP-->
+ 
+
+ 
+</body> 
+<!--_______________________________________________END APP--> 
 </html>
