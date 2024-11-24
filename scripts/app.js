@@ -1,6 +1,16 @@
 import * as Tone from "tone";
 import drumKits from "./drumLibrary.js";
 
+const transport = Tone.getTransport();
+const metronome = new Tone.Synth().toDestination();
+const soundSources = [
+  new Tone.Player("./sounds/kick.wav").toDestination(),
+  new Tone.Player("./sounds/snare.wav").toDestination(),
+  new Tone.Player("./sounds/hihat.wav").toDestination(),
+  new Tone.Player("./sounds/rim.wav").toDestination(),
+];
+
+
 let beatCounter = 0;
 let isMetronomeOn = false;
 let currentStep = 0;
@@ -36,25 +46,24 @@ const transportItems = {
   startSequence: () => {
       if (transport.state !== "started") {
         transport.start();
-        currentStep = 0;
-        beatCounter = 0;
-      } else {
-        currentStep = transport.position;
-      }
-      console.log(transport.position);
+      } 
     },
   pauseSequence: () => {
     currentStep = transport.position;
     transport.pause();
   },
   stopSequence: () => {
-    console.clear();
-    transport.position = "0:0:0";
     transport.stop();
+    beatCounter = 0;
+    transport.position = "0:0:0";
     currentStep = 0;
     highlightStep(currentStep);
   } 
 }
+
+const metronomeEvent = transport.scheduleRepeat((time) => {
+  if (isMetronomeOn) transportItems.playMetronome(time);
+}, "4n");
 
 const domElements = {
   kickLabel: document.getElementById("kickLabel"),
@@ -70,22 +79,13 @@ const domElements = {
 const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
 const drumLanes = [domElements.kickLane, domElements.snareLane, domElements.hiHatLane, domElements.rimLane];
 
-const transport = Tone.getTransport();
-const metronome = new Tone.Synth().toDestination();
-const soundSources = [
-  new Tone.Player("./sounds/kick.wav").toDestination(),
-  new Tone.Player("./sounds/snare.wav").toDestination(),
-  new Tone.Player("./sounds/hihat.wav").toDestination(),
-  new Tone.Player("./sounds/rim.wav").toDestination(),
-];
 
 
 
 
 
-const metronomeEvent = Tone.getTransport().scheduleRepeat((time) => {
-  if (isMetronomeOn) transportItems.playMetronome(time);
-}, "4n");
+
+
 
 transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronomActive);
 
