@@ -1,30 +1,75 @@
 import * as Tone from "tone";
-// DOM elements
-const metronomeButton = document.getElementById("metronomeButton");
-const playButton = document.querySelector(".play-container img");
-const pauseButton = document.querySelector(".pause-container img");
-const stopButton = document.querySelector(".stop-container img");
-const incrementTempoButton = document.getElementById("incrementTempo");
-const decrementTempoButton = document.getElementById("decrementTempo");
-const tempoDisplay = document.getElementById("tempoDisplay");
+import drumKits from "./drumLibrary.js";
 
-/* TRACKS */
-const drumsTrack = document.getElementById("drums");
-const bassTrack = document.getElementById("bass");
-/* DRUM LABELS */
-const kickLabel = document.getElementById("kickLabel");
-const snareLabel = document.getElementById("snareLabel");
-const hiHatLabel = document.getElementById("HHLabel");
-const rimLabel = document.getElementById("rimLabel");
-
-/* DRUM LANES */
-const kickLane = document.getElementById("kickLane");
-const snareLane = document.getElementById("snareLane");
-const hiHatLane = document.getElementById("hiHatLane");
-const rimLane = document.getElementById("rimLane");
+let beatCounter = 0;
+let isMetronomeOn = false;
+let currentStep = 0;
+const totalSteps = 32;
 
 
-// Tone.js setup
+const transportItems = {
+  metronomeButton: document.getElementById("metronomeButton"),
+  playButton: document.querySelector(".play-container img"),
+  pauseButton: document.querySelector(".pause-container img"),
+  stopButton: document.querySelector(".stop-container img"),
+  incrementTempoButton: document.getElementById("incrementTempo"),
+  decrementTempoButton: document.getElementById("decrementTempo"),
+  tempoDisplay: document.getElementById("tempoDisplay"),
+  clearButton: document.getElementById("clearButton"),
+  exportButton: document.getElementById("exportButton"),
+  clearPattern: () => {
+      const drums = document.getElementById("drums");
+      drums.querySelectorAll(".subdivision").forEach((subdivision) => {
+        subdivision.classList.remove("active");
+      });
+  },
+  playMetronome: (time) => {
+    metronome.volume.value = -13;
+    const note = beatCounter % 4 === 0 ? "C5" : "C4";
+    metronome.triggerAttackRelease(note, "16n", time);
+    beatCounter++;
+  },
+  toggleMetronomActive: () => {
+      isMetronomeOn = !isMetronomeOn;
+      transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
+  },
+  startSequence: () => {
+      if (transport.state !== "started") {
+        transport.start();
+        currentStep = 0;
+        beatCounter = 0;
+      } else {
+        currentStep = transport.position;
+      }
+      console.log(transport.position);
+    },
+  pauseSequence: () => {
+    currentStep = transport.position;
+    transport.pause();
+  },
+  stopSequence: () => {
+    console.clear();
+    transport.position = "0:0:0";
+    transport.stop();
+    currentStep = 0;
+    highlightStep(currentStep);
+  } 
+}
+
+const domElements = {
+  kickLabel: document.getElementById("kickLabel"),
+  snareLabel: document.getElementById("snareLabel"),
+  hiHatLabel: document.getElementById("HHLabel"),
+  rimLabel: document.getElementById("rimLabel"),
+  kickLane: document.getElementById("kickLane"),
+  snareLane: document.getElementById("snareLane"),
+  hiHatLane: document.getElementById("hiHatLane"),
+  rimLane: document.getElementById("rimLane")
+}
+
+const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
+const drumLanes = [domElements.kickLane, domElements.snareLane, domElements.hiHatLane, domElements.rimLane];
+
 const transport = Tone.getTransport();
 const metronome = new Tone.Synth().toDestination();
 const soundSources = [
@@ -33,65 +78,40 @@ const soundSources = [
   new Tone.Player("./sounds/hihat.wav").toDestination(),
   new Tone.Player("./sounds/rim.wav").toDestination(),
 ];
-const drumLabels = [kickLabel, snareLabel, hiHatLabel, rimLabel];
-const drumLanes = [kickLane, snareLane, hiHatLane, rimLane];
 
-let beatCounter = 0;
-let isMetronomeOn = false;
-let currentStep = 0;
-const totalSteps = 32;
 
-function playMetronome(time) {
-  metronome.volume.value = -20;
-  const note = beatCounter % 4 === 0 ? "C5" : "C4";
-  metronome.triggerAttackRelease(note, "16n", time);
-  beatCounter++;
-}
+
+
 
 const metronomeEvent = Tone.getTransport().scheduleRepeat((time) => {
-  if (isMetronomeOn) playMetronome(time);
+  if (isMetronomeOn) transportItems.playMetronome(time);
 }, "4n");
 
-metronomeButton.addEventListener("click", () => {
-  isMetronomeOn = !isMetronomeOn;
-  metronomeButton.classList.toggle("active", isMetronomeOn);
-});
+transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronomActive);
 
-// Transport controls
-playButton.addEventListener("click", () => {
-  if (transport.state !== "started") {
-    transport.start();
-    currentStep = 0;
-    beatCounter = 0;
-  }
-});
+transportItems.playButton.addEventListener("click", transportItems.startSequence);
 
-pauseButton.addEventListener("click", () => transport.pause());
-stopButton.addEventListener("click", () => {
-  transport.stop();
-  transport.position = "0:0:0";
-  currentStep = 0;
-  highlightStep(currentStep);
-});
+transportItems.pauseButton.addEventListener("click", transportItems.pauseSequence);
+transportItems.stopButton.addEventListener("click", transportItems.stopSequence);
 
-// Tempo controls
-incrementTempoButton.addEventListener("click", () => {
+
+function updateTempoDisplay() {
+  transportItems.tempoDisplay.textContent = `${Math.round(transport.bpm.value)} BPM`;
+}
+
+transportItems.incrementTempoButton.addEventListener("click", () => {
   transport.bpm.value += 1;
   updateTempoDisplay();
 });
 
-decrementTempoButton.addEventListener("click", () => {
+transportItems.decrementTempoButton.addEventListener("click", () => {
   if (transport.bpm.value > 1) {
     transport.bpm.value -= 1;
     updateTempoDisplay();
   }
 });
 
-function updateTempoDisplay() {
-  tempoDisplay.textContent = `${Math.round(transport.bpm.value)} BPM`;
-}
 
-// Render instrument grids
 function createSubdivisionsForLane(lane) {
   for (let i = 0; i < 32; i++) {
     const div = document.createElement("div");
@@ -111,7 +131,8 @@ renderGridSubdivisions();
 
 
 
-function populateScaleDropdown(array) {
+
+/* function populateScaleDropdown(array) {
   const scaleDropdownContent = document.getElementById("scaleDropdownContent");
 
   array.forEach((key, i) => {
@@ -129,9 +150,11 @@ function populateScaleDropdown(array) {
 
     scaleDropdownContent.appendChild(scaleDropDownItem);
   });
-}
+} */
 
-populateScaleDropdown(majorKeys);
+//populateScaleDropdown(majorKeys);
+
+
 
 
 function highlightStep(step) {
@@ -219,9 +242,4 @@ drumLanes.forEach((lane, index) => {
   });
 });
 
-document.getElementById("clearButton").addEventListener("click", () => {
-  const drums = document.getElementById("drums");
-  drums.querySelectorAll(".subdivision").forEach((subdivision) => {
-    subdivision.classList.remove("active");
-  });
-});
+transportItems.clearButton.addEventListener("click", transportItems.clearPattern);
