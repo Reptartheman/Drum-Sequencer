@@ -346,12 +346,12 @@ p.beat-count {
   cursor: pointer;
 }
 
-.KICK-label {
+.KICK-label  {
   background-color: var(--kickBackGround);
   transition: 0.5s;
 }
 
-.KICK-label:hover {
+.KICK-label:hover, .KICK-label.pressed {
   background-color: var(--kickBackGroundHover);
   color: var(--main-backGround);
 }
@@ -360,7 +360,7 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.SNARE-label:hover {
+.SNARE-label:hover, .SNARE-label.pressed {
   background-color: var(--snareBackGroundHover);
   color: var(--main-backGround);
 }
@@ -370,7 +370,7 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.RIM-label:hover {
+.RIM-label:hover, .RIM-label.pressed {
   background-color: var(--rimBackGroundHover);
   color: var(--main-backGround);
 }
@@ -380,10 +380,11 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.HH-label:hover {
+.HH-label:hover, .HH-label.pressed {
   background-color: var(--hiHatBackGroundHover);
   color: var(--main-backGround);
 }
+
 
 
 .beat-divider {
