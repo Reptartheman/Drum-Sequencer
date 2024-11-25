@@ -5,12 +5,16 @@
   --beatOne-backGround: #fffef6;
   --beatTwo-backGround: #f1efdc;
   --kickBackGround: rgba(178, 13, 255, 0.6);
+  --kickBackGroundNote: rgba(190, 86, 239, 0.346);
   --kickBackGroundHover: rgb(162, 23, 226);
   --snareBackGround: rgba(146, 189, 220, 1);
+  --snareBackGroundNote: rgba(85, 128, 158, 0.365);
   --snareBackGroundHover: rgba(33, 101, 150, 0.8);
   --rimBackGround: rgba(94, 198, 227, 1);
+  --rimBackGroundNote: rgba(151, 218, 237, 0.448);
   --rimBackGroundHover: rgba(15, 144, 236, 0.8);
   --hiHatBackGround: rgba(30, 193, 21, 1);
+  --hiHatBackGroundNote: rgba(103, 237, 96, 0.391);
   --hiHatBackGroundHover: rgb(35, 174, 28);
   --test-border: 3px solid red;
   --test-border2: 2px solid green;
@@ -124,14 +128,23 @@ span.tempo-display {
 /* styles.css */
 
 /* Metronome button styling */
+
+.metronome-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .metronome-button {
+  width: 100%;
+  height: 100%;
   background-color: transparent;
   border: none;
   cursor: pointer;
 }
 
 .metronome-button.active {
-  background-color: rgb(15, 208, 44); /* Metronome active color */
+  background-color: rgba(15, 208, 186, 0.445); /* Metronome active color */
 }
 
 .plus-container,
@@ -139,7 +152,7 @@ span.tempo-display {
   cursor: pointer;
 }
 
-.scale-container {
+.kit-container {
   background: transparent;
   border-radius: 5px;
   border-style: solid;
@@ -181,7 +194,12 @@ span.tempo-display {
   align-self: center;
 }
 
-.clear-button {
+.pattern-button-container {
+  display: flex;
+  gap: var(--size-50); 
+}
+
+.pattern-option-button {
   font-family: var(--main-font);
   font-size: var(--size-16);
   border-radius: 5px;
@@ -191,23 +209,17 @@ span.tempo-display {
   transition: 0.3s;
 }
 
-.clear-button:hover {
+.pattern-option-button:hover {
   background-color: var(--beatTwo-backGround);
 }
 
-.master-fader {
-  display: flex;
-  gap: var(--size-16);
-}
 
-.master-fader p {
-  font-size: var(--size-26);
-}
 
 .measures-container {
-  display: grid;
-  grid-template-columns: repeat(32, 1fr);
-}
+  grid-column: 2 / span 36;
+  display: flex;
+  flex-direction: row;
+} 
 
 .sketch-length-container {
   display: flex;
@@ -241,7 +253,7 @@ span.tempo-display {
   background-color: var(--beatTwo-backGround);
 }
 
-.dropdown-content, .scale-dropdown-content {
+.dropdown-content, .drumkit-dropdown-content {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
@@ -251,7 +263,7 @@ span.tempo-display {
   border-radius: 5px;
 }
 
-.dropdown-content p, p.scale-dropdown-item {
+.dropdown-content p, p.drumkit-dropdown-item {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
@@ -264,7 +276,7 @@ span.tempo-display {
 }
 
 
-.sketch-length-dropdown:hover .dropdown-content, .scale-container:hover .scale-dropdown-content {
+.sketch-length-dropdown:hover .dropdown-content, .kit-container:hover .drumkit-dropdown-content {
   display: block;
 }
 
@@ -312,42 +324,18 @@ p.beat-count {
   display: grid;
   grid-template-columns: repeat(36, 1fr);
   grid-template-rows: repeat(16, 1fr);
-  height: 88.4vh;
+  height: 90.2vh;
 }
 
-
-
-
-.channel-area {
+.drum-stack {
+  grid-column: 1 / span 1;
+  grid-row: 2 / span 16;
   display: grid;
-  grid-column: 1 / span 4;
-  grid-row: 1 / span 21;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-}
-
-
-
-.DRUMS {
-  grid-column: 1 / span 5;
-  grid-row: 1 / span 1;
-}
-
-.drum-stack, .pitch-stack {
-  grid-column: 5 / span 1;
-  grid-row: 1 / span 5;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(4, 1fr);
   justify-items: center;
   align-items: center;
 }
 
-.pitch-stack {
-  grid-template-rows: repeat(8, 1fr);
-}
-
-.drum-label-container, .pitch-label-container {
+.drum-label-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -358,12 +346,12 @@ p.beat-count {
   cursor: pointer;
 }
 
-.KICK-label {
+.KICK-label  {
   background-color: var(--kickBackGround);
   transition: 0.5s;
 }
 
-.KICK-label:hover {
+.KICK-label:hover, .KICK-label.pressed {
   background-color: var(--kickBackGroundHover);
   color: var(--main-backGround);
 }
@@ -372,7 +360,7 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.SNARE-label:hover {
+.SNARE-label:hover, .SNARE-label.pressed {
   background-color: var(--snareBackGroundHover);
   color: var(--main-backGround);
 }
@@ -382,7 +370,7 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.RIM-label:hover {
+.RIM-label:hover, .RIM-label.pressed {
   background-color: var(--rimBackGroundHover);
   color: var(--main-backGround);
 }
@@ -392,27 +380,12 @@ p.beat-count {
   transition: 0.5s;
 }
 
-.HH-label:hover {
+.HH-label:hover, .HH-label.pressed {
   background-color: var(--hiHatBackGroundHover);
   color: var(--main-backGround);
 }
 
 
-.DRUMS {
-  display: grid;
-  grid-column: 1 / span 5;
-  grid-template-columns: subgrid;
-  grid-template-rows: subgrid;
-}
-
-
-.DRUMS-container {
-  grid-column: 5 / span 36;
-  grid-row: 1 / span 21;
-  display: grid;
-  grid-template-columns: subgrid;
-  grid-template-rows: subgrid;
-}
 
 .beat-divider {
   border: 2px solid black;
@@ -427,18 +400,10 @@ p.beat-count {
 
 
 .instrument-track {
-  display: grid;
-  grid-column: 1 / span 32;
-  grid-row: 1 / span 4;
-  grid-template-columns: subgrid;
-  grid-template-rows: subgrid;
-  border-bottom: 2px solid black;
-}
-
-.drum-track {
-  display: grid;
-  grid-template-columns: subgrid;
-  grid-template-rows: repeat(4, 1fr);
+      display: grid;
+      grid-column: 2 / span 36;
+      grid-row: 2 / span 15;
+      border-bottom: 2px solid black;
 }
 
 .kick-lane, .snare-lane, .rim-lane, .hh-lane, .pitch-lane {
@@ -453,7 +418,7 @@ p.beat-count {
 }
 
 .kick-lane .subdivision.active {
-  background-color: var(--kickBackGround);
+  background-color: var(--kickBackGroundNote);
 }
 
 .kick-lane .subdivision.playing {
@@ -463,7 +428,7 @@ p.beat-count {
   grid-row: 3 / span 1;
 }
 .snare-lane .subdivision.active {
-  background-color: var(--snareBackGround);
+  background-color: var(--snareBackGroundNote);
 }
 
 .snare-lane .subdivision.playing {
@@ -475,7 +440,7 @@ p.beat-count {
 }
 
 .rim-lane .subdivision.active {
-  background-color: var(--rimBackGround);
+  background-color: var(--rimBackGroundNote);
 }
 
 .rim-lane .subdivision.playing {
@@ -487,7 +452,7 @@ p.beat-count {
 }
 
 .hh-lane .subdivision.active {
-  background-color: var(--hiHatBackGround);
+  background-color: var(--hiHatBackGroundNote);
 }
 
 .hh-lane .subdivision.playing {
