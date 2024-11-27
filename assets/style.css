@@ -337,6 +337,7 @@ p.beat-count {
 
 .drum-label-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border: var(--beat-border);
@@ -344,6 +345,11 @@ p.beat-count {
   height: 100%;
   user-select: none;
   cursor: pointer;
+  transition: 0.01s;
+}
+
+.drum-label-container:active {
+  transform: scale(0.999);
 }
 
 .KICK-label  {
@@ -353,6 +359,7 @@ p.beat-count {
 
 .KICK-label:hover, .KICK-label.pressed {
   background-color: var(--kickBackGroundHover);
+  box-shadow: 0 0 10px 5px var(--kickBackGround);
   color: var(--main-backGround);
 }
 .SNARE-label {
@@ -362,6 +369,7 @@ p.beat-count {
 
 .SNARE-label:hover, .SNARE-label.pressed {
   background-color: var(--snareBackGroundHover);
+  background-color: var(--snareBackGroundNote);
   color: var(--main-backGround);
 }
 
@@ -372,6 +380,7 @@ p.beat-count {
 
 .RIM-label:hover, .RIM-label.pressed {
   background-color: var(--rimBackGroundHover);
+  box-shadow: 0 0 10px 5px var(--rimBackGround);
   color: var(--main-backGround);
 }
 
@@ -382,9 +391,13 @@ p.beat-count {
 
 .HH-label:hover, .HH-label.pressed {
   background-color: var(--hiHatBackGroundHover);
+  box-shadow: 0 0 10px 5px var(--hiHatBackGround);;
   color: var(--main-backGround);
 }
 
+.pressed {
+  transform: scale(1.1);
+}
 
 
 .beat-divider {

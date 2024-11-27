@@ -1,7 +1,9 @@
 import * as Tone from "tone";
+import { Midi } from '@tonejs/midi'
 import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
+const midi = new Midi();
 const metronome = new Tone.Synth().toDestination();
 const soundSources = [
   new Tone.Player("./sounds/kick.wav").toDestination(),
@@ -16,7 +18,16 @@ let isMetronomeOn = false;
 let currentStep = 0;
 const totalSteps = 32;
 
+const keyToDrum = {
+  z: 0, // Kick
+  s: 1, // Snare
+  h: 2, // Hi-hat
+  d: 3  // Rim
+};
+
+
 const domElements = {
+  drumLabelContainer: document.querySelectorAll(".drum-label-container"),
   kickLabel: document.getElementById("kickLabel"),
   snareLabel: document.getElementById("snareLabel"),
   hiHatLabel: document.getElementById("HHLabel"),
@@ -25,9 +36,27 @@ const domElements = {
   snareLane: document.getElementById("snareLane"),
   hiHatLane: document.getElementById("hiHatLane"),
   rimLane: document.getElementById("rimLane"),
-  transportTimeDisplay: document.getElementById("transportTimeDisplay")
-}
+  transportTimeDisplay: document.getElementById("transportTimeDisplay"),
+  handleKeyUp: (e) => {
+  const key = e.key.toLowerCase();
+  const drumIndex = keyToDrum[key];
+  if (drumIndex === undefined) return;
 
+  const drumLabel = drumLabels[drumIndex];
+  drumLabel.classList.remove("pressed");
+},
+  handleKeyDown: async (e) => {  
+    const key = e.key.toLowerCase();
+    const drumIndex = keyToDrum[key];
+    if (drumIndex === undefined) return;
+  
+    const drumLabel = drumLabels[drumIndex];
+    drumLabel.classList.add("pressed");
+  
+    await Tone.start();
+    soundSources[drumIndex].start();
+  }
+}
 const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
 const drumLanes = [domElements.kickLane, domElements.snareLane, domElements.hiHatLane, domElements.rimLane];
 
@@ -72,6 +101,38 @@ const transportItems = {
     currentStep = 0;
     highlightStep(currentStep);
   },
+  exportMIDI: () => {
+    const track = midi.addTrack();
+    const drumMidiNotes = [36, 38, 42, 37];
+
+    midi.header.setTempo(Tone.getTransport().bpm.value);
+    midi.header.ppq = 192;
+    
+    drumLanes.forEach((lane, index) => {
+        const midiNote = drumMidiNotes[index];
+        const subdivisions = lane.querySelectorAll(".subdivision");
+
+        subdivisions.forEach((subdivision, stepIndex) => {
+            if (subdivision.classList.contains("active")) {
+                const time = stepIndex * Tone.Time("16n").toSeconds();
+                track.addNote({
+                    midi: midiNote,
+                    time: time,
+                    duration: Tone.Time("16n").toSeconds(),
+                    velocity: 0.8,
+                });
+            }
+        });
+    });
+
+    const midiData = midi.toArray();
+    const blob = new Blob([midiData], { type: "audio/midi" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "drum-sequence.mid";
+    link.click();
+  }
+
 }
 
 const metronomeEvent = transport.scheduleRepeat((time) => {
@@ -190,6 +251,11 @@ drumLabels.forEach((label, index) => {
 
 
 
+  
+
+
+
+
 let isDragging = false;
 let hasPlayedSound = false;
 
@@ -227,30 +293,20 @@ drumLanes.forEach((lane, index) => {
 
 transportItems.clearButton.addEventListener("click", transportItems.clearPattern);
 
-
-
-const keyToDrum = {
-  a: 0, // Kick
-  s: 1, // Snare
-  d: 2, // Hi-hat
-  f: 3  // Rim
-};
-
-// Play sound and update lanes
-document.addEventListener("keydown", (event) => {
-  const key = event.key.toLowerCase(); // Normalize key to lowercase
-  const drumIndex = keyToDrum[key];
-
-  if (drumIndex !== undefined) {
-    // Play the sound
-    soundSources[drumIndex].start();
-
-    // Flash the label for visual feedback
-    flashLabel(drumLabels[drumIndex]);
-  }
+drumLabels.forEach((label) => {
+  label.addEventListener("transitionend", (e) => {
+      if (e.propertyName === 'transform') {
+          e.target.classList.remove('pressed');
+      }
+  });
 });
 
-function flashLabel(label) {
-  label.classList.add("pressed");
-  setTimeout(() => label.classList.remove("pressed"), 500);
-}
+
+
+
+
+document.addEventListener("keydown", domElements.handleKeyDown);
+document.addEventListener("keyup", domElements.handleKeyUp);
+transportItems.exportButton.addEventListener("click", transportItems.exportMIDI);
+
+
