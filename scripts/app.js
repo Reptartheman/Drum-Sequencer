@@ -60,6 +60,41 @@ const domElements = {
 const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
 const drumLanes = [domElements.kickLane, domElements.snareLane, domElements.hiHatLane, domElements.rimLane];
 
+const drumLogic = {
+  createSubdivisionsForLane: (lane) => {
+    for (let i = 0; i < 32; i++) {
+      const div = document.createElement("div");
+      div.classList.add("subdivision");
+      div.style.gridColumn = `${i + 1}`;
+      if (i % 4 === 0) div.style.borderLeft = "4px solid black";
+      lane.appendChild(div);
+    }
+  },
+  renderGridSubdivisions: function() {
+    const lanes = document.querySelectorAll(".drum-lane, .pitch-lane");
+    lanes.forEach((lane) => this.createSubdivisionsForLane(lane));
+  },
+  handleGridEventListeners: () => {
+    drumLanes.forEach((lane, index) => {
+      lane.addEventListener("mousedown", async (e) => {
+        const target = e.target;
+        if (target.classList.contains("subdivision")) {
+          isDragging = true;
+          hasPlayedSound = false;
+    
+          target.classList.toggle("active");
+    
+          if (!hasPlayedSound && target.classList.contains("active")) {
+            await Tone.start();
+            soundSources[index].start();
+            hasPlayedSound = true;
+          }
+        }
+      });
+    }
+  )}
+}
+
 const transportItems = {
   metronomeButton: document.getElementById("metronomeButton"),
   playButton: document.querySelector(".play-container img"),
@@ -107,7 +142,7 @@ const transportItems = {
 
     midi.header.setTempo(Tone.getTransport().bpm.value);
     midi.header.ppq = 192;
-    
+
     drumLanes.forEach((lane, index) => {
         const midiNote = drumMidiNotes[index];
         const subdivisions = lane.querySelectorAll(".subdivision");
@@ -164,21 +199,10 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
 });
 
 
-function createSubdivisionsForLane(lane) {
-  for (let i = 0; i < 32; i++) {
-    const div = document.createElement("div");
-    div.classList.add("subdivision");
-    div.style.gridColumn = `${i + 1}`;
-    if (i % 4 === 0) div.style.borderLeft = "4px solid black";
-    lane.appendChild(div);
-  }
-}
 
-function renderGridSubdivisions() {
-  const lanes = document.querySelectorAll(".drum-lane, .pitch-lane");
-  lanes.forEach((lane) => createSubdivisionsForLane(lane));
-}
-renderGridSubdivisions();
+
+
+drumLogic.renderGridSubdivisions();
 
 
 /* function populateScaleDropdown(array) {
@@ -206,48 +230,7 @@ renderGridSubdivisions();
 
 
 
-function highlightStep(step) {
-  drumLanes.forEach((lane) => {
-    const subdivisions = lane.children;
-    Array.from(subdivisions).forEach((subdivision) =>
-      subdivision.classList.remove("playing")
-    );
-    if (subdivisions[step]) {
-      subdivisions[step].classList.add("playing");
-    }
-  });
-}
 
-
-let drumSequences = [];
-
-drumLanes.forEach((lane, index) => {
-  const soundSource = soundSources[index];
-
-  const sequence = new Tone.Sequence(
-    (time, step) => {
-      const subdivision = lane.children[step];
-      if (subdivision.classList.contains("active")) {
-        soundSource.start(time);
-      }
-      if (index === 0) {
-        highlightStep(step);
-      }
-    },
-    Array.from({ length: totalSteps }, (_, i) => i),
-    "16n"
-  ).start(0);
-
-  drumSequences.push(sequence);
-});
-
-drumLabels.forEach((label, index) => {
-  label.addEventListener("click", async (e) => {
-    e.preventDefault();
-    await Tone.start();
-    soundSources[index].start();
-  });
-});
 
 
 
@@ -259,22 +242,7 @@ drumLabels.forEach((label, index) => {
 let isDragging = false;
 let hasPlayedSound = false;
 
-drumLanes.forEach((lane, index) => {
-  lane.addEventListener("mousedown", async (e) => {
-    const target = e.target;
-    if (target.classList.contains("subdivision")) {
-      isDragging = true;
-      hasPlayedSound = false;
 
-      target.classList.toggle("active");
-
-      if (!hasPlayedSound && target.classList.contains("active")) {
-        await Tone.start();
-        soundSources[index].start();
-        hasPlayedSound = true;
-      }
-    }
-  });
 
   document.addEventListener("mousemove", (e) => {
     if (isDragging) {
@@ -289,7 +257,7 @@ drumLanes.forEach((lane, index) => {
     isDragging = false;
     hasPlayedSound = false;
   });
-});
+
 
 transportItems.clearButton.addEventListener("click", transportItems.clearPattern);
 
@@ -308,5 +276,6 @@ drumLabels.forEach((label) => {
 document.addEventListener("keydown", domElements.handleKeyDown);
 document.addEventListener("keyup", domElements.handleKeyUp);
 transportItems.exportButton.addEventListener("click", transportItems.exportMIDI);
+drumLogic.handleGridEventListeners();
 
 
