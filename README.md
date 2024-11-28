@@ -1,2 +1,2 @@
 # Drum-Sequencer
-A simple drum sequencer built with jQuery from the book JavaScript for Sound Artists
+The drum sequencer portion of my future app BeatSketch.
