@@ -12,6 +12,8 @@ const soundSources = [
   new Tone.Player("./sounds/rim.wav").toDestination(),
 ];
 
+let isDragging = false;
+let hasPlayedSound = false;
 
 let beatCounter = 0;
 let isMetronomeOn = false;
@@ -45,7 +47,7 @@ const domElements = {
   const drumLabel = drumLabels[drumIndex];
   drumLabel.classList.remove("pressed");
 },
-  handleKeyDown: async (e) => {  
+  handleKeyDown: async (e) => { 
     const key = e.key.toLowerCase();
     const drumIndex = keyToDrum[key];
     if (drumIndex === undefined) return;
@@ -74,8 +76,8 @@ const drumLogic = {
     const lanes = document.querySelectorAll(".drum-lane, .pitch-lane");
     lanes.forEach((lane) => this.createSubdivisionsForLane(lane));
   },
-  handleGridEventListeners: () => {
-    drumLanes.forEach((lane, index) => {
+  handleGridEventListeners: (arr) => {
+    arr.forEach((lane, index) => {
       lane.addEventListener("mousedown", async (e) => {
         const target = e.target;
         if (target.classList.contains("subdivision")) {
@@ -92,7 +94,42 @@ const drumLogic = {
         }
       });
     }
-  )}
+  )},
+  highlightStep: function(arr, step) {
+    arr.forEach((lane) => {
+      const subdivisions = lane.children;
+      Array.from(subdivisions).forEach((subdivision) =>
+        subdivision.classList.remove("playing")
+      );
+      if (subdivisions[step]) {
+        subdivisions[step].classList.add("playing");
+      }
+    });
+  },
+  addSoundsToGrid: function(arr) {
+    let drumSequences = [];
+    arr.forEach((lane, index) => {
+      const soundSource = soundSources[index];
+
+      const sequence = new Tone.Sequence(
+        (time, step) => {
+          const subdivision = lane.children[step];
+          if (subdivision.classList.contains("active")) {
+            soundSource.start(time);
+          }
+          if (index === 0) {
+            currentStep = step;
+            this.highlightStep(drumLanes, currentStep)
+          }
+        },
+        Array.from({ length: totalSteps }, (_, i) => i),
+        "16n"
+      ).start(0);
+    
+      drumSequences.push(sequence);
+    });
+    
+  }
 }
 
 const transportItems = {
@@ -105,43 +142,46 @@ const transportItems = {
   tempoDisplay: document.getElementById("tempoDisplay"),
   clearButton: document.getElementById("clearButton"),
   exportButton: document.getElementById("exportButton"),
+  startSequence: () => {
+      transport.start();
+  },
+pauseSequence: () => {
+  transport.pause();
+},
+stopSequence: function() {
+  transport.stop();
+  beatCounter = 0;
+  transport.position = "0:0:0";
+  currentStep = 0;
+  drumLogic.highlightStep(drumLanes, currentStep);
+},
   clearPattern: () => {
       const drums = document.getElementById("drums");
       drums.querySelectorAll(".subdivision").forEach((subdivision) => {
         subdivision.classList.remove("active");
       });
   },
+  metronomeScheduler: function() {
+    return transport.scheduleRepeat((time) => {
+      if (isMetronomeOn) this.playMetronome(time);
+    }, "4n");
+  },
+  toggleMetronomActive: function() {
+    isMetronomeOn = !isMetronomeOn;
+    transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
+    this.metronomeScheduler();
+},
   playMetronome: (time) => {
     metronome.volume.value = -13;
     const note = beatCounter % 4 === 0 ? "C5" : "C4";
     metronome.triggerAttackRelease(note, "16n", time);
     beatCounter++;
   },
-  toggleMetronomActive: () => {
-      isMetronomeOn = !isMetronomeOn;
-      transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-  },
-  startSequence: () => {
-      if (transport.state !== "started") {
-        transport.start();
-      } 
-    },
-  pauseSequence: () => {
-    transport.pause();
-  },
-  stopSequence: () => {
-    transport.stop();
-    beatCounter = 0;
-    transport.position = "0:0:0";
-    currentStep = 0;
-    highlightStep(currentStep);
-  },
-  exportMIDI: () => {
+  exportMIDI: function() {
     const track = midi.addTrack();
     const drumMidiNotes = [36, 38, 42, 37];
 
     midi.header.setTempo(Tone.getTransport().bpm.value);
-    midi.header.ppq = 192;
 
     drumLanes.forEach((lane, index) => {
         const midiNote = drumMidiNotes[index];
@@ -159,22 +199,38 @@ const transportItems = {
             }
         });
     });
+    this.handleFileNameChanger();
+  },
+  handleFileNameChanger: async function() {
+     const midiData = midi.toArray();
 
-    const midiData = midi.toArray();
-    const blob = new Blob([midiData], { type: "audio/midi" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "drum-sequence.mid";
-    link.click();
+     try {
+         const options = {
+             suggestedName: "drum-sequence.mid",
+             types: [
+                 {
+                     description: "MIDI files",
+                     accept: { "audio/midi": [".mid"] },
+                 },
+             ],
+         };
+ 
+         const handle = await window.showSaveFilePicker(options);
+         const writable = await handle.createWritable();
+         await writable.write(new Blob([midiData], { type: "audio/midi" }));
+         await writable.close();
+ 
+         console.log("File saved successfully!");
+     } catch (error) {
+         console.error("Error saving file:", error);
+     }
   }
 
 }
 
-const metronomeEvent = transport.scheduleRepeat((time) => {
-  if (isMetronomeOn) transportItems.playMetronome(time);
-}, "4n");
 
-transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronomActive);
+
+transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronomActive.bind(transportItems));
 
 transportItems.playButton.addEventListener("click", transportItems.startSequence);
 
@@ -239,8 +295,6 @@ drumLogic.renderGridSubdivisions();
 
 
 
-let isDragging = false;
-let hasPlayedSound = false;
 
 
 
@@ -275,7 +329,8 @@ drumLabels.forEach((label) => {
 
 document.addEventListener("keydown", domElements.handleKeyDown);
 document.addEventListener("keyup", domElements.handleKeyUp);
-transportItems.exportButton.addEventListener("click", transportItems.exportMIDI);
-drumLogic.handleGridEventListeners();
+transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.bind(transportItems));
+drumLogic.handleGridEventListeners(drumLanes);
+drumLogic.addSoundsToGrid(drumLanes);
 
 
