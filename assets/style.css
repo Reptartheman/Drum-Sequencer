@@ -269,10 +269,11 @@ span.tempo-display {
   text-decoration: none;
   display: block;
   cursor: pointer;
+  transition: 0.5s;
 }
 
-.dropdown-content p:hover {
-  background-color: var(--beatOne-backGround);
+p.drumkit-dropdown-item:hover, p.drumkit-dropdown-item:active {
+  background-color: #B6D7A8;
 }
 
 

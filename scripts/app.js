@@ -1,17 +1,10 @@
 import * as Tone from "tone";
 import { Midi } from '@tonejs/midi'
-import drumKits from "./drumLibrary.js";
+import soundData from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
 const midi = new Midi();
 const metronome = new Tone.Synth().toDestination();
-const soundSources = [
-  new Tone.Player("./sounds/kick.wav").toDestination(),
-  new Tone.Player("./sounds/snare.wav").toDestination(),
-  new Tone.Player("./sounds/hihat.wav").toDestination(),
-  new Tone.Player("./sounds/rim.wav").toDestination(),
-];
-
 let isDragging = false;
 let hasPlayedSound = false;
 
@@ -26,6 +19,26 @@ const keyToDrum = {
   h: 2, // Hi-hat
   d: 3  // Rim
 };
+// Dynamic sound sources from the drumLibrary.js
+let soundSources = [];
+
+// Function to set up sounds from selected kit
+function loadDrumKit(drumKitIndex) {
+  const selectedKit = soundData.drumKits[drumKitIndex];
+
+  // Clear existing players
+  soundSources.forEach((player) => player.dispose());
+  soundSources = [];
+
+  // Create new Tone.Players for the selected kit
+  soundSources = selectedKit.filePaths.map((filePath) => new Tone.Player(filePath).toDestination());
+
+  console.log(`Loaded drum kit: ${selectedKit.name}`, soundSources);
+}
+
+// Default to the first drum kit on load
+ // Load Kit 1 by default
+
 
 
 const domElements = {
@@ -110,7 +123,7 @@ const drumLogic = {
     let drumSequences = [];
     arr.forEach((lane, index) => {
       const soundSource = soundSources[index];
-
+  
       const sequence = new Tone.Sequence(
         (time, step) => {
           const subdivision = lane.children[step];
@@ -119,16 +132,15 @@ const drumLogic = {
           }
           if (index === 0) {
             currentStep = step;
-            this.highlightStep(drumLanes, currentStep)
+            this.highlightStep(drumLanes, currentStep);
           }
         },
         Array.from({ length: totalSteps }, (_, i) => i),
         "16n"
       ).start(0);
-    
+  
       drumSequences.push(sequence);
     });
-    
   }
 }
 
@@ -261,44 +273,25 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
 drumLogic.renderGridSubdivisions();
 
 
-/* function populateScaleDropdown(array) {
-  const scaleDropdownContent = document.getElementById("scaleDropdownContent");
+function populateKitSelectionDropdown(array) {
+  const drumkitDropdownContent = document.getElementById("drumkitDropdownContent");
 
-  array.forEach((key, i) => {
-    const scaleDropDownItem = document.createElement("p");
-    scaleDropDownItem.id = "scaleDropdownItem";
-    scaleDropDownItem.classList.add("scale-dropdown-item");
-    scaleDropDownItem.textContent = key.name;
-    scaleDropDownItem.style.backgroundColor = key.bgColor; // Set color in dropdown
+  array.forEach((kit, index) => {
+    const drumkitDropdownItem = document.createElement("p");
+    drumkitDropdownItem.classList.add("drumkit-dropdown-item");
+    drumkitDropdownItem.textContent = kit.name;
+    //drumkitDropdownItem.style.backgroundColor = kit.bgColor || "#ddd";
+    drumkitDropdownContent.appendChild(drumkitDropdownItem);
 
-    // When scale is selected, render the pitch stack
-    scaleDropDownItem.addEventListener('click', () => {
-      renderPitchStacks(key, 'bassPitchStack'); // Render for bass
-      renderPitchStacks(key, 'melodyPitchStack'); // Render for melody
-    });
-
-    scaleDropdownContent.appendChild(scaleDropDownItem);
+    // On click, load the selected drum kit
+    drumkitDropdownItem.addEventListener("click", () => loadDrumKit(index));
   });
-} */
+}
 
-//populateScaleDropdown(majorKeys);
-
-
+// Populate dropdown with kits from soundData
 
 
-
-
-
-
-  
-
-
-
-
-
-
-
-  document.addEventListener("mousemove", (e) => {
+document.addEventListener("mousemove", (e) => {
     if (isDragging) {
       const target = document.elementFromPoint(e.clientX, e.clientY);
       if (target && target.classList.contains("subdivision")) {
@@ -331,6 +324,8 @@ document.addEventListener("keydown", domElements.handleKeyDown);
 document.addEventListener("keyup", domElements.handleKeyUp);
 transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.bind(transportItems));
 drumLogic.handleGridEventListeners(drumLanes);
+populateKitSelectionDropdown(soundData.drumKits);
+loadDrumKit(0);
 drumLogic.addSoundsToGrid(drumLanes);
 
 

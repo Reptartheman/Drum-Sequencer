@@ -1,32 +1,34 @@
-import * as Tone from 'tone';
-const drumKits = [
-  {
-    name: 'Kit 1',
-    sounds: {
-      kick: new Tone.Player("./sounds/kick.wav").toDestination(),
-      snare: new Tone.Player("./sounds/snare.wav").toDestination(),
-      rim: new Tone.Player("./sounds/hihat.wav").toDestination(),
-      hiHat: new Tone.Player("./sounds/rim.wav").toDestination(),
+import * as Tone from "tone";
+const soundData = {
+  drumKits: [
+    {
+      name: "Kit 1",
+      filePaths: [
+        "./sounds/kick1.wav",
+        "./sounds/snare1.wav",
+        "./sounds/rim1.wav",
+        "./sounds/hihat1.wav",
+      ],
     },
-  },
-  {
-    name: 'Kit 2',
-    sounds: {
-      kick: new Tone.Player('sounds/kit2/kick.wav').toDestination(),
-      snare: new Tone.Player('sounds/kit2/snare.wav').toDestination(),
-      rim: new Tone.Player('sounds/kit2/rim.wav').toDestination(),
-      hiHat: new Tone.Player('sounds/kit2/hh.wav').toDestination(),
+    {
+      name: "Kit 2",
+      filePaths: [
+        "./sounds/kick2.wav",
+        "./sounds/snare2.wav",
+        "./sounds/rim2.wav",
+        "./sounds/hihat2.wav",
+      ],
     },
-  },
-  {
-    name: 'Kit 3',
-    sounds: {
-      kick: new Tone.Player('sounds/kit3/kick.wav').toDestination(),
-      snare: new Tone.Player('sounds/kit3/snare.wav').toDestination(),
-      rim: new Tone.Player('sounds/kit3/rim.wav').toDestination(),
-      hiHat: new Tone.Player('sounds/kit3/hh.wav').toDestination(),
+    {
+      name: "Kit 3",
+      filePaths: [
+        "./sounds/kick3.wav",
+        "./sounds/snare3.wav",
+        "./sounds/rim3.wav",
+        "./sounds/hihat3.wav",
+      ],
     },
-  },
-];
+  ],
+};
 
-export default drumKits;
+export default soundData;
