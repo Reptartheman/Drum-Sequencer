@@ -61,6 +61,7 @@
     </section>
 
     <div class="sequencer-container">
+      
       <div class="metronome-img">
         <button class="metronome-button" id="metronomeButton">
           <img src="./assets/metronome.png" alt="metronome" />
@@ -85,6 +86,7 @@
         </div>
       </div>
       <section class="measures-container">
+        
         <div class="beat-container timeline-item">
           <p class="beat-count">1.1</p>
         </div>
@@ -112,10 +114,11 @@
       </section>
 
       <div id="drums" class="drum-track instrument-track">
-        <div id="hiHatLane" class="drum-lane hh-lane"></div>
-        <div id="rimLane" class="drum-lane rim-lane"></div>
-        <div id="snareLane" class="drum-lane snare-lane"></div>
-        <div id="kickLane" class="drum-lane kick-lane"></div>
+        <div class="playhead"></div>
+        <div id="hiHatLane" class="drum-lane hh-lane note-highlight"></div>
+        <div id="rimLane" class="drum-lane rim-lane note-highlight"></div>
+        <div id="snareLane" class="drum-lane snare-lane note-highlight"></div>
+        <div id="kickLane" class="drum-lane kick-lane note-highlight"></div>
       </div>
     </div>
 

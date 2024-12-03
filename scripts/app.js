@@ -73,7 +73,7 @@ const drumLogic = {
     }
   },
   renderGridSubdivisions: function() {
-    const lanes = document.querySelectorAll(".drum-lane, .pitch-lane");
+    const lanes = document.querySelectorAll(".drum-lane");
     lanes.forEach((lane) => this.createSubdivisionsForLane(lane));
   },
   handleGridEventListeners: (arr) => {
@@ -95,17 +95,37 @@ const drumLogic = {
       });
     }
   )},
-  highlightStep: function(arr, step) {
-    arr.forEach((lane) => {
-      const subdivisions = lane.children;
-      Array.from(subdivisions).forEach((subdivision) =>
-        subdivision.classList.remove("playing")
-      );
-      if (subdivisions[step]) {
-        subdivisions[step].classList.add("playing");
-      }
-    });
-  },
+  highlightStep: function(step) {
+    const drumWindow = document.getElementById("drums");
+    
+    const playhead = document.querySelector(".playhead");
+    const progress = (transport.progress + 1) / 2;
+
+    setInterval(() => {
+      playhead.animate([
+        {
+          offset: 0,
+          transform: `translateX(0)`
+        },
+        {
+          offset: 1,
+          transform: `translateX(${drumWindow.clientWidth}vw)`
+        }
+      ],{				 
+        duration: progress,
+        easing: 'linear',
+        delay: 0,
+        iterations: 1,
+        direction: 'normal',
+        fill: 'forwards'
+      });
+    }, 16);
+      
+
+    
+    
+},
+
   addSoundsToGrid: function(arr) {
     let drumSequences = [];
     arr.forEach((lane, index) => {
@@ -119,7 +139,7 @@ const drumLogic = {
           }
           if (index === 0) {
             currentStep = step;
-            this.highlightStep(drumLanes, currentStep)
+            this.highlightStep(currentStep)
           }
         },
         Array.from({ length: totalSteps }, (_, i) => i),
@@ -144,6 +164,7 @@ const transportItems = {
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
       transport.start();
+      drumLogic.highlightStep(currentStep);
   },
 pauseSequence: () => {
   transport.pause();
@@ -152,8 +173,9 @@ stopSequence: function() {
   transport.stop();
   beatCounter = 0;
   transport.position = "0:0:0";
-  currentStep = 0;
-  drumLogic.highlightStep(drumLanes, currentStep);
+  const playhead = document.querySelector(".playhead");
+  playhead.style.transform = `translateX(0)`;
+  drumLogic.highlightStep(currentStep);
 },
   clearPattern: () => {
       const drums = document.getElementById("drums");
@@ -332,5 +354,7 @@ document.addEventListener("keyup", domElements.handleKeyUp);
 transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.bind(transportItems));
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
+//drumLogic.highlightStep(drumLanes, currentStep);
+
 
 

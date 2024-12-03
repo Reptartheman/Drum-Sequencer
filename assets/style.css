@@ -434,7 +434,7 @@ p.beat-count {
   background-color: var(--kickBackGroundNote);
 }
 
-.kick-lane .subdivision.playing {
+.kick-lane .subdivision.note-highlight {
   box-shadow: 0 0 10px 5px var(--kickBackGround);
 }
 .snare-lane {
@@ -444,7 +444,7 @@ p.beat-count {
   background-color: var(--snareBackGroundNote);
 }
 
-.snare-lane .subdivision.playing {
+.snare-lane .subdivision.note-highlight {
   box-shadow: 0 0 10px 5px var(--snareBackGround);
 }
 
@@ -456,7 +456,7 @@ p.beat-count {
   background-color: var(--rimBackGroundNote);
 }
 
-.rim-lane .subdivision.playing {
+.rim-lane .subdivision.note-highlight {
   box-shadow: 0 0 10px 5px var(--rimBackGround);
 }
 
@@ -468,9 +468,20 @@ p.beat-count {
   background-color: var(--hiHatBackGroundNote);
 }
 
-.hh-lane .subdivision.playing {
+.hh-lane .subdivision.note-highlight {
   box-shadow: 0 0 10px 5px var(--hiHatBackGround);
 }
+
+.playhead {
+  position: absolute;
+  top: 148px;
+    left: 53px;
+    height: 85%;
+  width: 4px; /* Width of the playhead */
+  background-color: red;
+  pointer-events: none; /* Prevent interaction */
+}
+
 
 
 
