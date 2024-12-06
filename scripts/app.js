@@ -28,6 +28,8 @@ const keyToDrum = {
 };
 
 
+
+
 const domElements = {
   drumLabelContainer: document.querySelectorAll(".drum-label-container"),
   kickLabel: document.getElementById("kickLabel"),
@@ -57,6 +59,15 @@ const domElements = {
   
     await Tone.start();
     soundSources[drumIndex].start();
+  },
+  handleDrumLabelClick: (array) => {
+    array.forEach((label, index) => {
+      label.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await Tone.start();
+        soundSources[index].start();
+      });
+    });
   }
 }
 const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
@@ -96,6 +107,7 @@ const drumLogic = {
     }
   )},
   highlightStep: function(arr, step) {
+    console.log(`highlighting`);
     arr.forEach((lane) => {
       const subdivisions = lane.children;
       Array.from(subdivisions).forEach((subdivision) =>
@@ -162,16 +174,19 @@ stopSequence: function() {
       });
   },
   metronomeScheduler: function() {
-    return transport.scheduleRepeat((time) => {
+    return new Tone.Loop((time) => {
+      console.log(`I am scheduler`);
       if (isMetronomeOn) this.playMetronome(time);
     }, "4n");
   },
   toggleMetronomActive: function() {
+    console.log(`I am toggle`);
     isMetronomeOn = !isMetronomeOn;
     transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
     this.metronomeScheduler();
 },
   playMetronome: (time) => {
+    console.log(`I am metronome`);
     metronome.volume.value = -13;
     const note = beatCounter % 4 === 0 ? "C5" : "C4";
     metronome.triggerAttackRelease(note, "16n", time);
@@ -330,7 +345,7 @@ drumLabels.forEach((label) => {
 document.addEventListener("keydown", domElements.handleKeyDown);
 document.addEventListener("keyup", domElements.handleKeyUp);
 transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.bind(transportItems));
+domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
-
 
