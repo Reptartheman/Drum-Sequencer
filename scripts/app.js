@@ -5,6 +5,7 @@ import drumKits from "./drumLibrary.js";
 const transport = Tone.getTransport();
 const midi = new Midi();
 const metronome = new Tone.Synth().toDestination();
+const now = Tone.now();
 const soundSources = [
   new Tone.Player("./sounds/kick.wav").toDestination(),
   new Tone.Player("./sounds/snare.wav").toDestination(),
@@ -17,6 +18,7 @@ let hasPlayedSound = false;
 
 let beatCounter = 0;
 let isMetronomeOn = false;
+let metronomeLoop = null;
 let currentStep = 0;
 const totalSteps = 32;
 
@@ -174,23 +176,32 @@ stopSequence: function() {
       });
   },
   metronomeScheduler: function() {
-    return new Tone.Loop((time) => {
-      console.log(`I am scheduler`);
-      if (isMetronomeOn) this.playMetronome(time);
-    }, "4n");
+    if (metronomeLoop) {
+      metronomeLoop.stop(); // Stop the existing loop
+      metronomeLoop.dispose(); // Free up resources
+    }
+
+    // Create a new loop
+    metronomeLoop = new Tone.Loop((time) => {
+      if (isMetronomeOn) {
+        this.playMetronome(time);
+      }
+    }, "4n").start(0);
   },
   toggleMetronomActive: function() {
-    console.log(`I am toggle`);
     isMetronomeOn = !isMetronomeOn;
     transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-    this.metronomeScheduler();
+
+    if (isMetronomeOn) {
+      this.metronomeScheduler(); // Start/reinitialize metronome loop
+    } else if (metronomeLoop) {
+      metronomeLoop.stop(); // Stop the loop when turning off
+    }
 },
   playMetronome: (time) => {
-    console.log(`I am metronome`);
-    metronome.volume.value = -13;
-    const note = beatCounter % 4 === 0 ? "C5" : "C4";
-    metronome.triggerAttackRelease(note, "16n", time);
-    beatCounter++;
+    const note = beatCounter % 4 === 0 ? "C5" : "C4"; // Accented on downbeat
+    metronome.triggerAttackRelease(note, "16n", time); // Play metronome sound
+    beatCounter++; 
   },
   exportMIDI: function() {
     const track = midi.addTrack();
