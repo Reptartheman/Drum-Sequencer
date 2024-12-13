@@ -468,7 +468,7 @@ p.beat-count {
   background-color: var(--hiHatBackGroundNote);
 }
 
-.hh-lane .subdivision.playing {
+.timeline-item.playing {
   box-shadow: 0 0 10px 5px var(--hiHatBackGround);
 }
 

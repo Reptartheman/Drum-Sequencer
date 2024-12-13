@@ -4,8 +4,8 @@ import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
 const midi = new Midi();
-const metronome = new Tone.Synth().toDestination();
-const now = Tone.now();
+const metronomeSource = new Tone.Synth().toDestination();
+const draw = Tone.getDraw();
 const soundSources = [
   new Tone.Player("./sounds/kick.wav").toDestination(),
   new Tone.Player("./sounds/snare.wav").toDestination(),
@@ -16,9 +16,9 @@ const soundSources = [
 let isDragging = false;
 let hasPlayedSound = false;
 
-let beatCounter = 0;
+let beatCounter = Tone.Time("4n").toSeconds();
 let isMetronomeOn = false;
-let metronomeLoop = null;
+let metronomeLoop;
 let currentStep = 0;
 const totalSteps = 32;
 
@@ -29,7 +29,7 @@ const keyToDrum = {
   d: 3  // Rim
 };
 
-
+console.log(beatCounter);
 
 
 const domElements = {
@@ -43,6 +43,8 @@ const domElements = {
   hiHatLane: document.getElementById("hiHatLane"),
   rimLane: document.getElementById("rimLane"),
   transportTimeDisplay: document.getElementById("transportTimeDisplay"),
+  measuresContainer: document.getElementById("measuresContainer"),
+  timeLineItem: document.querySelectorAll(".timeline-item"),
   handleKeyUp: (e) => {
   const key = e.key.toLowerCase();
   const drumIndex = keyToDrum[key];
@@ -108,18 +110,16 @@ const drumLogic = {
       });
     }
   )},
-  highlightStep: function(arr, step) {
-    console.log(`highlighting`);
-    arr.forEach((lane) => {
-      const subdivisions = lane.children;
-      Array.from(subdivisions).forEach((subdivision) =>
-        subdivision.classList.remove("playing")
-      );
-      if (subdivisions[step]) {
-        subdivisions[step].classList.add("playing");
+  /* highlightStep: function(array, beat) {
+    for (let index = 0; index < array.length; index++) {
+      const elem = array[index];
+      elem.classList.remove("playing");
+      if (index === beat) {
+        elem.classList.add("playing");
       }
-    });
-  },
+    }
+    console.log(`${array}: ${beat}`); 
+  }, */
   addSoundsToGrid: function(arr) {
     let drumSequences = [];
     arr.forEach((lane, index) => {
@@ -130,10 +130,6 @@ const drumLogic = {
           const subdivision = lane.children[step];
           if (subdivision.classList.contains("active")) {
             soundSource.start(time);
-          }
-          if (index === 0) {
-            currentStep = step;
-            this.highlightStep(drumLanes, currentStep)
           }
         },
         Array.from({ length: totalSteps }, (_, i) => i),
@@ -157,17 +153,16 @@ const transportItems = {
   clearButton: document.getElementById("clearButton"),
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
+    //console.log('playing');
       transport.start();
   },
 pauseSequence: () => {
+  //console.log('paused');
   transport.pause();
 },
 stopSequence: function() {
   transport.stop();
-  beatCounter = 0;
   transport.position = "0:0:0";
-  currentStep = 0;
-  drumLogic.highlightStep(drumLanes, currentStep);
 },
   clearPattern: () => {
       const drums = document.getElementById("drums");
@@ -175,33 +170,35 @@ stopSequence: function() {
         subdivision.classList.remove("active");
       });
   },
-  metronomeScheduler: function() {
-    if (metronomeLoop) {
-      metronomeLoop.stop(); // Stop the existing loop
-      metronomeLoop.dispose(); // Free up resources
-    }
-
-    // Create a new loop
-    metronomeLoop = new Tone.Loop((time) => {
-      if (isMetronomeOn) {
-        this.playMetronome(time);
+  playMetronome: () => {
+    metronomeLoop = new Tone.Loop((time) =>  {
+      metronomeSource.volume.value = -13;
+      /* if (beatCounter > transport.timeSignature) {
+        beatCounter = 1;
+      } */
+      if (beatCounter === 1) {
+        metronomeSource.triggerAttackRelease("C5", "16n", time);
+      } else {
+        metronomeSource.triggerAttackRelease("C4", "16n", time);
       }
+      //beatCounter++;
+      draw.schedule(() => {
+        //domElements.timeLineItem.classList.add("playing");
+        console.log(beatCounter);
+      }, time);
     }, "4n").start(0);
   },
-  toggleMetronomActive: function() {
+  toggleMetronome: () => {
     isMetronomeOn = !isMetronomeOn;
     transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-
+    //console.log(isMetronomeOn);
     if (isMetronomeOn) {
-      this.metronomeScheduler(); // Start/reinitialize metronome loop
-    } else if (metronomeLoop) {
-      metronomeLoop.stop(); // Stop the loop when turning off
+      //console.log(`I am on!!`);
+      transportItems.playMetronome();
+    } else {  
+      //console.log(`I am off!!`);
+      metronomeLoop.stop();
     }
-},
-  playMetronome: (time) => {
-    const note = beatCounter % 4 === 0 ? "C5" : "C4"; // Accented on downbeat
-    metronome.triggerAttackRelease(note, "16n", time); // Play metronome sound
-    beatCounter++; 
   },
   exportMIDI: function() {
     const track = midi.addTrack();
@@ -211,9 +208,9 @@ stopSequence: function() {
 
     drumLanes.forEach((lane, index) => {
         const midiNote = drumMidiNotes[index];
-        const subdivisions = lane.querySelectorAll(".subdivision");
+        const beatDividers = lane.querySelectorAll(".subdivision");
 
-        subdivisions.forEach((subdivision, stepIndex) => {
+        beatDividers.forEach((subdivision, stepIndex) => {
             if (subdivision.classList.contains("active")) {
                 const time = stepIndex * Tone.Time("16n").toSeconds();
                 track.addNote({
@@ -256,7 +253,7 @@ stopSequence: function() {
 
 
 
-transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronomActive.bind(transportItems));
+transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronome.bind(transportItems));
 
 transportItems.playButton.addEventListener("click", transportItems.startSequence);
 
@@ -359,4 +356,7 @@ transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.
 domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
+
+//drumLogic.highlightStep(domElements.measuresContainer, 0);
+
 
