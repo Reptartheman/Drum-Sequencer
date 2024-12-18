@@ -21,14 +21,13 @@ let hasPlayedSound = false;
 let beatCounter = 0;
 let isMetronomeOn = false;
 let metronomeLoop;
-let measureCount = 2;
 const totalSteps = 32;
 
 const keyToDrum = {
-  z: 0, // Kick
-  s: 1, // Snare
-  h: 2, // Hi-hat
-  d: 3, // Rim
+  z: 0,
+  s: 1,
+  h: 2,
+  d: 3,
 };
 
 const domElements = {
@@ -125,38 +124,33 @@ const drumLogic = {
       const bars = parseInt(position[0], 10);
       const beats = parseInt(position[1], 10);
       const sixteenths = parseInt(position[2], 10);
-      
-      
-      beatCounter = ((bars * 4 + beats) % totalSteps);
+
+      beatCounter = (bars * 4 + beats) % totalSteps;
       console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
-        draw.schedule(() => {
-            drumLogic.highlightStep();
-        }, time);
+      draw.schedule(() => {
+        drumLogic.highlightStep();
+      }, time);
     }, "4n").start(0);
-},
+  },
 
-  
-highlightStep: function () {
-  domElements.timeLineItems.forEach((item) => {
-    item.classList.remove("playing");
-  });
+  highlightStep: function () {
+    domElements.timeLineItems.forEach((item) => {
+      item.classList.remove("playing");
+    });
 
-  if (beatCounter < domElements.timeLineItems.length) {
-    domElements.timeLineItems[beatCounter].classList.add("playing");
-  }
-},
-setBeatBlock: function () {
-  // Remove playing class from all items
-  domElements.timeLineItems.forEach((item) => {
-    item.classList.remove("playing");
-  });
+    if (beatCounter < domElements.timeLineItems.length) {
+      domElements.timeLineItems[beatCounter].classList.add("playing");
+    }
+  },
+  setBeatBlock: function () {
+    domElements.timeLineItems.forEach((item) => {
+      item.classList.remove("playing");
+    });
 
-  // Add playing class to the first item
-  domElements.timeLineItems[0].classList.add("playing");
+    domElements.timeLineItems[0].classList.add("playing");
 
-  // Reset the beat counter
-  beatCounter = 0;
-},
+    beatCounter = 0;
+  },
 
   addSoundsToGrid: function (arr) {
     let drumSequences = [];
@@ -190,12 +184,10 @@ const transportItems = {
   clearButton: document.getElementById("clearButton"),
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
-    //console.log('playing');
     transport.start();
     console.log(transport.position);
   },
   pauseSequence: () => {
-    //console.log('paused');
     transport.pause();
     console.log(transport.position);
   },
@@ -223,36 +215,30 @@ const transportItems = {
         }
       }, "4n");
     }
-  
-    // Ensure the loop starts and is unmuted
+
     metronomeLoop.start(0);
     metronomeLoop.mute = false;
-  
+
     drumLogic.handleBeatCount();
   },
-  
-  
+
   toggleMetronome: () => {
     isMetronomeOn = !isMetronomeOn;
     transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-  
+
     if (isMetronomeOn) {
       if (!metronomeLoop) {
-        // Initialize the loop if it doesn't exist
         transportItems.playMetronome();
       } else {
-        // Unmute the loop if it exists
         metronomeLoop.mute = false;
       }
     } else {
       if (metronomeLoop) {
-        // Mute the loop
         metronomeLoop.mute = true;
       }
     }
   },
-  
-  
+
   exportMIDI: function () {
     const track = midi.addTrack();
     const drumMidiNotes = [36, 38, 42, 37];
@@ -317,7 +303,10 @@ transportItems.pauseButton.addEventListener(
   "click",
   transportItems.pauseSequence
 );
-transportItems.stopButton.addEventListener("click", transportItems.stopSequence);
+transportItems.stopButton.addEventListener(
+  "click",
+  transportItems.stopSequence
+);
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
@@ -338,7 +327,6 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
 });
 
 drumLogic.renderGridSubdivisions();
-
 
 document.addEventListener("mousemove", (e) => {
   if (isDragging) {
@@ -377,5 +365,3 @@ domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
 drumLogic.setBeatBlock();
-
-
