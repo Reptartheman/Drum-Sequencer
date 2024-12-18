@@ -3,6 +3,7 @@ import { Midi } from "@tonejs/midi";
 import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
+const now = Tone.now();
 transport.loop = true;
 transport.loopStart = 0;
 transport.loopEnd = "2:0:0";
@@ -121,11 +122,18 @@ const drumLogic = {
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
-      beatCounter++;
-      console.log(beatCounter);      
+      // Get the current position in measures:beats:sixteenths
+      const position = transport.position.split(":");
+      const beats = parseInt(position[1], 10);
+
+      beatCounter = beats;
+      draw.schedule(() => {
+        drumLogic.highlightStep()
+      }, time);
+      console.log(`Current Beat: ${beatCounter}`);
     }, "4n").start(0);
-    return beatCounter;
   },
+  
   highlightStep: function () {
     domElements.timeLineItems.forEach((item) => {
       item.classList.remove("playing");
@@ -135,7 +143,7 @@ const drumLogic = {
       domElements.timeLineItems[beatCounter].classList.add("playing");
     }
 
-    beatCounter = (beatCounter + 1) % domElements.timeLineItems.length;
+    //beatCounter = (beatCounter + 1) % domElements.timeLineItems.length;
   },
   addSoundsToGrid: function (arr) {
     let drumSequences = [];
@@ -171,7 +179,6 @@ const transportItems = {
   startSequence: () => {
     //console.log('playing');
     transport.start();
-    drumLogic.handleBeatCount();
     console.log(transport.position);
   },
   pauseSequence: () => {
@@ -182,6 +189,7 @@ const transportItems = {
   stopSequence: function () {
     transport.stop();
     transport.position = "0:0:0";
+    beatCounter = 0;
     console.log(transport.position);
   },
   clearPattern: () => {
@@ -191,27 +199,46 @@ const transportItems = {
     });
   },
   playMetronome: () => {
-    metronomeLoop = new Tone.Loop((time) => {
-      metronomeSource.volume.value = -13;
-      if (transport.position.includes("0:0")) {
-        metronomeSource.triggerAttackRelease("C5", "16n", time);
-      } else {
-        metronomeSource.triggerAttackRelease("C4", "16n", time);
-      }
-    }, "4n").start(0);
+    if (!metronomeLoop) {
+      metronomeLoop = new Tone.Loop((time) => {
+        metronomeSource.volume.value = -13;
+        if (transport.position.includes("0:0")) {
+          metronomeSource.triggerAttackRelease("C5", "16n", time);
+        } else {
+          metronomeSource.triggerAttackRelease("C4", "16n", time);
+        }
+      }, "4n");
+    }
+  
+    // Ensure the loop starts and is unmuted
+    metronomeLoop.start(0);
+    metronomeLoop.mute = false;
+  
+    drumLogic.handleBeatCount();
   },
+  
+  
   toggleMetronome: () => {
     isMetronomeOn = !isMetronomeOn;
     transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-    //console.log(isMetronomeOn);
+  
     if (isMetronomeOn) {
-      //console.log(`I am on!!`);
-      transportItems.playMetronome();
+      if (!metronomeLoop) {
+        // Initialize the loop if it doesn't exist
+        transportItems.playMetronome();
+      } else {
+        // Unmute the loop if it exists
+        metronomeLoop.mute = false;
+      }
     } else {
-      //console.log(`I am off!!`);
-      metronomeLoop.stop();
+      if (metronomeLoop) {
+        // Mute the loop
+        metronomeLoop.mute = true;
+      }
     }
   },
+  
+  
   exportMIDI: function () {
     const track = midi.addTrack();
     const drumMidiNotes = [36, 38, 42, 37];

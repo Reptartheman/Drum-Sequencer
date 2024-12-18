@@ -352,9 +352,7 @@ p.beat-count {
   transform: scale(0.999);
 }
 
-.timeline-item {
-  transition: 0.1s;
-}
+
 
 .KICK-label  {
   background-color: var(--kickBackGround);
