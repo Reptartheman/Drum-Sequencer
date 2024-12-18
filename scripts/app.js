@@ -3,7 +3,6 @@ import { Midi } from "@tonejs/midi";
 import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
-const now = Tone.now();
 transport.loop = true;
 transport.loopStart = 0;
 transport.loopEnd = "2:0:0";
@@ -22,7 +21,7 @@ let hasPlayedSound = false;
 let beatCounter = 0;
 let isMetronomeOn = false;
 let metronomeLoop;
-let currentStep = 0;
+let currentBlock = 0;
 const totalSteps = 32;
 
 const keyToDrum = {
@@ -122,29 +121,23 @@ const drumLogic = {
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
-      // Get the current position in measures:beats:sixteenths
-      const position = transport.position.split(":");
-      const beats = parseInt(position[1], 10);
+        const position = transport.position.split(":");
+        const beats = parseInt(position[1], 10);
 
-      beatCounter = beats;
-      draw.schedule(() => {
-        drumLogic.highlightStep()
-      }, time);
-      console.log(`Current Beat: ${beatCounter}`);
+        beatCounter = (beats % totalSteps); // Ensure beatCounter wraps correctly
+        draw.schedule(() => {
+            drumLogic.highlightStep();
+        }, time);
     }, "4n").start(0);
-  },
+},
+
   
-  highlightStep: function () {
-    domElements.timeLineItems.forEach((item) => {
-      item.classList.remove("playing");
-    });
+highlightStep: function () {
+  domElements.timeLineItems.forEach((item, index) => {
+      item.classList.toggle("playing", index === beatCounter);
+  });
+},
 
-    if (beatCounter < domElements.timeLineItems.length) {
-      domElements.timeLineItems[beatCounter].classList.add("playing");
-    }
-
-    //beatCounter = (beatCounter + 1) % domElements.timeLineItems.length;
-  },
   addSoundsToGrid: function (arr) {
     let drumSequences = [];
     arr.forEach((lane, index) => {
@@ -328,27 +321,6 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
 
 drumLogic.renderGridSubdivisions();
 
-/* function populateScaleDropdown(array) {
-  const scaleDropdownContent = document.getElementById("scaleDropdownContent");
-
-  array.forEach((key, i) => {
-    const scaleDropDownItem = document.createElement("p");
-    scaleDropDownItem.id = "scaleDropdownItem";
-    scaleDropDownItem.classList.add("scale-dropdown-item");
-    scaleDropDownItem.textContent = key.name;
-    scaleDropDownItem.style.backgroundColor = key.bgColor; // Set color in dropdown
-
-    // When scale is selected, render the pitch stack
-    scaleDropDownItem.addEventListener('click', () => {
-      renderPitchStacks(key, 'bassPitchStack'); // Render for bass
-      renderPitchStacks(key, 'melodyPitchStack'); // Render for melody
-    });
-
-    scaleDropdownContent.appendChild(scaleDropDownItem);
-  });
-} */
-
-//populateScaleDropdown(majorKeys);
 
 document.addEventListener("mousemove", (e) => {
   if (isDragging) {
