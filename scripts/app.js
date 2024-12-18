@@ -21,7 +21,7 @@ let hasPlayedSound = false;
 let beatCounter = 0;
 let isMetronomeOn = false;
 let metronomeLoop;
-let currentBlock = 0;
+let measureCount = 2;
 const totalSteps = 32;
 
 const keyToDrum = {
@@ -121,10 +121,14 @@ const drumLogic = {
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
-        const position = transport.position.split(":");
-        const beats = parseInt(position[1], 10);
-
-        beatCounter = (beats % totalSteps); // Ensure beatCounter wraps correctly
+      const position = transport.position.split(":");
+      const bars = parseInt(position[0], 10);
+      const beats = parseInt(position[1], 10);
+      const sixteenths = parseInt(position[2], 10);
+      
+      
+      beatCounter = ((bars * 4 + beats) % totalSteps);
+      console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
         draw.schedule(() => {
             drumLogic.highlightStep();
         }, time);
@@ -133,9 +137,25 @@ const drumLogic = {
 
   
 highlightStep: function () {
-  domElements.timeLineItems.forEach((item, index) => {
-      item.classList.toggle("playing", index === beatCounter);
+  domElements.timeLineItems.forEach((item) => {
+    item.classList.remove("playing");
   });
+
+  if (beatCounter < domElements.timeLineItems.length) {
+    domElements.timeLineItems[beatCounter].classList.add("playing");
+  }
+},
+setBeatBlock: function () {
+  // Remove playing class from all items
+  domElements.timeLineItems.forEach((item) => {
+    item.classList.remove("playing");
+  });
+
+  // Add playing class to the first item
+  domElements.timeLineItems[0].classList.add("playing");
+
+  // Reset the beat counter
+  beatCounter = 0;
 },
 
   addSoundsToGrid: function (arr) {
@@ -181,6 +201,7 @@ const transportItems = {
   },
   stopSequence: function () {
     transport.stop();
+    drumLogic.setBeatBlock();
     transport.position = "0:0:0";
     beatCounter = 0;
     console.log(transport.position);
@@ -296,10 +317,7 @@ transportItems.pauseButton.addEventListener(
   "click",
   transportItems.pauseSequence
 );
-transportItems.stopButton.addEventListener(
-  "click",
-  transportItems.stopSequence
-);
+transportItems.stopButton.addEventListener("click", transportItems.stopSequence);
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
@@ -358,5 +376,6 @@ transportItems.exportButton.addEventListener(
 domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
+drumLogic.setBeatBlock();
 
-//drumLogic.highlightStep(domElements.measuresContainer, 0);
+
