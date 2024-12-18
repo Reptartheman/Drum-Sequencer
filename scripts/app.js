@@ -1,8 +1,11 @@
 import * as Tone from "tone";
-import { Midi } from '@tonejs/midi'
+import { Midi } from "@tonejs/midi";
 import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
+transport.loop = true;
+transport.loopStart = 0;
+transport.loopEnd = "2:0:0";
 const midi = new Midi();
 const metronomeSource = new Tone.Synth().toDestination();
 const draw = Tone.getDraw();
@@ -15,8 +18,7 @@ const soundSources = [
 
 let isDragging = false;
 let hasPlayedSound = false;
-
-let beatCounter = Tone.Time("4n").toSeconds();
+let beatCounter = 0;
 let isMetronomeOn = false;
 let metronomeLoop;
 let currentStep = 0;
@@ -26,11 +28,8 @@ const keyToDrum = {
   z: 0, // Kick
   s: 1, // Snare
   h: 2, // Hi-hat
-  d: 3  // Rim
+  d: 3, // Rim
 };
-
-console.log(beatCounter);
-
 
 const domElements = {
   drumLabelContainer: document.querySelectorAll(".drum-label-container"),
@@ -44,23 +43,23 @@ const domElements = {
   rimLane: document.getElementById("rimLane"),
   transportTimeDisplay: document.getElementById("transportTimeDisplay"),
   measuresContainer: document.getElementById("measuresContainer"),
-  timeLineItem: document.querySelectorAll(".timeline-item"),
+  timeLineItems: document.querySelectorAll(".timeline-item"),
   handleKeyUp: (e) => {
-  const key = e.key.toLowerCase();
-  const drumIndex = keyToDrum[key];
-  if (drumIndex === undefined) return;
-
-  const drumLabel = drumLabels[drumIndex];
-  drumLabel.classList.remove("pressed");
-},
-  handleKeyDown: async (e) => { 
     const key = e.key.toLowerCase();
     const drumIndex = keyToDrum[key];
     if (drumIndex === undefined) return;
-  
+
+    const drumLabel = drumLabels[drumIndex];
+    drumLabel.classList.remove("pressed");
+  },
+  handleKeyDown: async (e) => {
+    const key = e.key.toLowerCase();
+    const drumIndex = keyToDrum[key];
+    if (drumIndex === undefined) return;
+
     const drumLabel = drumLabels[drumIndex];
     drumLabel.classList.add("pressed");
-  
+
     await Tone.start();
     soundSources[drumIndex].start();
   },
@@ -72,10 +71,20 @@ const domElements = {
         soundSources[index].start();
       });
     });
-  }
-}
-const drumLabels = [domElements.kickLabel, domElements.snareLabel, domElements.hiHatLabel, domElements.rimLabel];
-const drumLanes = [domElements.kickLane, domElements.snareLane, domElements.hiHatLane, domElements.rimLane];
+  },
+};
+const drumLabels = [
+  domElements.kickLabel,
+  domElements.snareLabel,
+  domElements.hiHatLabel,
+  domElements.rimLabel,
+];
+const drumLanes = [
+  domElements.kickLane,
+  domElements.snareLane,
+  domElements.hiHatLane,
+  domElements.rimLane,
+];
 
 const drumLogic = {
   createSubdivisionsForLane: (lane) => {
@@ -87,7 +96,7 @@ const drumLogic = {
       lane.appendChild(div);
     }
   },
-  renderGridSubdivisions: function() {
+  renderGridSubdivisions: function () {
     const lanes = document.querySelectorAll(".drum-lane, .pitch-lane");
     lanes.forEach((lane) => this.createSubdivisionsForLane(lane));
   },
@@ -98,9 +107,9 @@ const drumLogic = {
         if (target.classList.contains("subdivision")) {
           isDragging = true;
           hasPlayedSound = false;
-    
+
           target.classList.toggle("active");
-    
+
           if (!hasPlayedSound && target.classList.contains("active")) {
             await Tone.start();
             soundSources[index].start();
@@ -108,19 +117,27 @@ const drumLogic = {
           }
         }
       });
+    });
+  },
+  handleBeatCount: function () {
+    new Tone.Loop((time) => {
+      beatCounter++;
+      console.log(beatCounter);      
+    }, "4n").start(0);
+    return beatCounter;
+  },
+  highlightStep: function () {
+    domElements.timeLineItems.forEach((item) => {
+      item.classList.remove("playing");
+    });
+
+    if (beatCounter < domElements.timeLineItems.length) {
+      domElements.timeLineItems[beatCounter].classList.add("playing");
     }
-  )},
-  /* highlightStep: function(array, beat) {
-    for (let index = 0; index < array.length; index++) {
-      const elem = array[index];
-      elem.classList.remove("playing");
-      if (index === beat) {
-        elem.classList.add("playing");
-      }
-    }
-    console.log(`${array}: ${beat}`); 
-  }, */
-  addSoundsToGrid: function(arr) {
+
+    beatCounter = (beatCounter + 1) % domElements.timeLineItems.length;
+  },
+  addSoundsToGrid: function (arr) {
     let drumSequences = [];
     arr.forEach((lane, index) => {
       const soundSource = soundSources[index];
@@ -135,12 +152,11 @@ const drumLogic = {
         Array.from({ length: totalSteps }, (_, i) => i),
         "16n"
       ).start(0);
-    
+
       drumSequences.push(sequence);
     });
-    
-  }
-}
+  },
+};
 
 const transportItems = {
   metronomeButton: document.getElementById("metronomeButton"),
@@ -154,38 +170,34 @@ const transportItems = {
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
     //console.log('playing');
-      transport.start();
+    transport.start();
+    drumLogic.handleBeatCount();
+    console.log(transport.position);
   },
-pauseSequence: () => {
-  //console.log('paused');
-  transport.pause();
-},
-stopSequence: function() {
-  transport.stop();
-  transport.position = "0:0:0";
-},
+  pauseSequence: () => {
+    //console.log('paused');
+    transport.pause();
+    console.log(transport.position);
+  },
+  stopSequence: function () {
+    transport.stop();
+    transport.position = "0:0:0";
+    console.log(transport.position);
+  },
   clearPattern: () => {
-      const drums = document.getElementById("drums");
-      drums.querySelectorAll(".subdivision").forEach((subdivision) => {
-        subdivision.classList.remove("active");
-      });
+    const drums = document.getElementById("drums");
+    drums.querySelectorAll(".subdivision").forEach((subdivision) => {
+      subdivision.classList.remove("active");
+    });
   },
   playMetronome: () => {
-    metronomeLoop = new Tone.Loop((time) =>  {
+    metronomeLoop = new Tone.Loop((time) => {
       metronomeSource.volume.value = -13;
-      /* if (beatCounter > transport.timeSignature) {
-        beatCounter = 1;
-      } */
-      if (beatCounter === 1) {
+      if (transport.position.includes("0:0")) {
         metronomeSource.triggerAttackRelease("C5", "16n", time);
       } else {
         metronomeSource.triggerAttackRelease("C4", "16n", time);
       }
-      //beatCounter++;
-      draw.schedule(() => {
-        //domElements.timeLineItem.classList.add("playing");
-        console.log(beatCounter);
-      }, time);
     }, "4n").start(0);
   },
   toggleMetronome: () => {
@@ -195,74 +207,84 @@ stopSequence: function() {
     if (isMetronomeOn) {
       //console.log(`I am on!!`);
       transportItems.playMetronome();
-    } else {  
+    } else {
       //console.log(`I am off!!`);
       metronomeLoop.stop();
     }
   },
-  exportMIDI: function() {
+  exportMIDI: function () {
     const track = midi.addTrack();
     const drumMidiNotes = [36, 38, 42, 37];
 
     midi.header.setTempo(Tone.getTransport().bpm.value);
 
     drumLanes.forEach((lane, index) => {
-        const midiNote = drumMidiNotes[index];
-        const beatDividers = lane.querySelectorAll(".subdivision");
+      const midiNote = drumMidiNotes[index];
+      const beatDividers = lane.querySelectorAll(".subdivision");
 
-        beatDividers.forEach((subdivision, stepIndex) => {
-            if (subdivision.classList.contains("active")) {
-                const time = stepIndex * Tone.Time("16n").toSeconds();
-                track.addNote({
-                    midi: midiNote,
-                    time: time,
-                    duration: Tone.Time("16n").toSeconds(),
-                    velocity: 0.8,
-                });
-            }
-        });
+      beatDividers.forEach((subdivision, stepIndex) => {
+        if (subdivision.classList.contains("active")) {
+          const time = stepIndex * Tone.Time("16n").toSeconds();
+          track.addNote({
+            midi: midiNote,
+            time: time,
+            duration: Tone.Time("16n").toSeconds(),
+            velocity: 0.8,
+          });
+        }
+      });
     });
     this.handleFileNameChanger();
   },
-  handleFileNameChanger: async function() {
-     const midiData = midi.toArray();
+  handleFileNameChanger: async function () {
+    const midiData = midi.toArray();
 
-     try {
-         const options = {
-             suggestedName: "drum-sequence.mid",
-             types: [
-                 {
-                     description: "MIDI files",
-                     accept: { "audio/midi": [".mid"] },
-                 },
-             ],
-         };
- 
-         const handle = await window.showSaveFilePicker(options);
-         const writable = await handle.createWritable();
-         await writable.write(new Blob([midiData], { type: "audio/midi" }));
-         await writable.close();
- 
-         console.log("File saved successfully!");
-     } catch (error) {
-         console.error("Error saving file:", error);
-     }
-  }
+    try {
+      const options = {
+        suggestedName: "drum-sequence.mid",
+        types: [
+          {
+            description: "MIDI files",
+            accept: { "audio/midi": [".mid"] },
+          },
+        ],
+      };
 
-}
+      const handle = await window.showSaveFilePicker(options);
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([midiData], { type: "audio/midi" }));
+      await writable.close();
 
+      console.log("File saved successfully!");
+    } catch (error) {
+      console.error("Error saving file:", error);
+    }
+  },
+};
 
+transportItems.metronomeButton.addEventListener(
+  "click",
+  transportItems.toggleMetronome.bind(transportItems)
+);
 
-transportItems.metronomeButton.addEventListener("click", transportItems.toggleMetronome.bind(transportItems));
+transportItems.playButton.addEventListener(
+  "click",
+  transportItems.startSequence
+);
 
-transportItems.playButton.addEventListener("click", transportItems.startSequence);
-
-transportItems.pauseButton.addEventListener("click", transportItems.pauseSequence);
-transportItems.stopButton.addEventListener("click", transportItems.stopSequence);
-
+transportItems.pauseButton.addEventListener(
+  "click",
+  transportItems.pauseSequence
+);
+transportItems.stopButton.addEventListener(
+  "click",
+  transportItems.stopSequence
+);
 
 function updateTempoDisplay() {
-  transportItems.tempoDisplay.textContent = `${Math.round(transport.bpm.value)} BPM`;
+  transportItems.tempoDisplay.textContent = `${Math.round(
+    transport.bpm.value
+  )} BPM`;
 }
 
 transportItems.incrementTempoButton.addEventListener("click", () => {
@@ -277,12 +299,7 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
   }
 });
 
-
-
-
-
 drumLogic.renderGridSubdivisions();
-
 
 /* function populateScaleDropdown(array) {
   const scaleDropdownContent = document.getElementById("scaleDropdownContent");
@@ -306,57 +323,41 @@ drumLogic.renderGridSubdivisions();
 
 //populateScaleDropdown(majorKeys);
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-  document.addEventListener("mousemove", (e) => {
-    if (isDragging) {
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      if (target && target.classList.contains("subdivision")) {
-        target.classList.add("active");
-      }
+document.addEventListener("mousemove", (e) => {
+  if (isDragging) {
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    if (target && target.classList.contains("subdivision")) {
+      target.classList.add("active");
     }
-  });
+  }
+});
 
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    hasPlayedSound = false;
-  });
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  hasPlayedSound = false;
+});
 
-
-transportItems.clearButton.addEventListener("click", transportItems.clearPattern);
+transportItems.clearButton.addEventListener(
+  "click",
+  transportItems.clearPattern
+);
 
 drumLabels.forEach((label) => {
   label.addEventListener("transitionend", (e) => {
-      if (e.propertyName === 'transform') {
-          e.target.classList.remove('pressed');
-      }
+    if (e.propertyName === "transform") {
+      e.target.classList.remove("pressed");
+    }
   });
 });
 
-
-
-
-
 document.addEventListener("keydown", domElements.handleKeyDown);
 document.addEventListener("keyup", domElements.handleKeyUp);
-transportItems.exportButton.addEventListener("click", transportItems.exportMIDI.bind(transportItems));
+transportItems.exportButton.addEventListener(
+  "click",
+  transportItems.exportMIDI.bind(transportItems)
+);
 domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
 
 //drumLogic.highlightStep(domElements.measuresContainer, 0);
-
-
