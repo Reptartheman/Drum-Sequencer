@@ -3,6 +3,7 @@ import { Midi } from "@tonejs/midi";
 import drumKits from "./drumLibrary.js";
 
 const transport = Tone.getTransport();
+let bpm = transport.bpm.value;
 transport.loop = true;
 transport.loopStart = 0;
 transport.loopEnd = "2:0:0";
@@ -15,7 +16,7 @@ const soundSources = [
   new Tone.Player("./sounds/hihat.wav").toDestination(),
   new Tone.Player("./sounds/rim.wav").toDestination(),
 ];
-
+const tempoSlider = document.getElementById("tempoSlider");
 let isDragging = false;
 let hasPlayedSound = false;
 let beatCounter = 0;
@@ -308,13 +309,20 @@ transportItems.stopButton.addEventListener(
   transportItems.stopSequence
 );
 
+const updateBPM = (newBPM) => {
+  transport.bpm.value = bpm;
+  tempoSlider.value = bpm;
+  bpm = newBPM;
+  updateTempoDisplay();
+};
+
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
     transport.bpm.value
   )} BPM`;
 }
 
-transportItems.incrementTempoButton.addEventListener("click", () => {
+/* transportItems.incrementTempoButton.addEventListener("click", () => {
   transport.bpm.value += 1;
   updateTempoDisplay();
 });
@@ -324,7 +332,7 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
     transport.bpm.value -= 1;
     updateTempoDisplay();
   }
-});
+}); */
 
 drumLogic.renderGridSubdivisions();
 
@@ -361,6 +369,16 @@ transportItems.exportButton.addEventListener(
   "click",
   transportItems.exportMIDI.bind(transportItems)
 );
+
+
+
+tempoSlider.addEventListener("input", (e) => {
+  updateBPM(parseInt(e.target.value));
+});
+
+
+
+
 domElements.handleDrumLabelClick(drumLabels);
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);

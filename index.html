@@ -15,28 +15,24 @@
 
     <section class="global-transport">
       <div class="tempo-container">
-        <div class="transport-container" id="transportTimeDisplay"></div>
-        <div id="decrementTempo" class="minus-container">
-          <img src="./assets/MINUSContainer.png" alt="minus button" />
-        </div>
+        
+        <input id="tempoSlider" type="range" min="20" max="260" step="1" class="slider" value="120" />
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
-        <div id="incrementTempo" class="plus-container">
-          <img src="./assets/PLUSContainer.png" alt="plus button" />
-        </div>
+        
       </div>
 
       <div class="kit-container">
-        <p>Kit selection</p>
+        <p>Kit selection coming soon!</p>
         <div id="drumkitDropdownContent" class="drumkit-dropdown-content">
           <!-- dynamically render kits -->
         </div>
-        <div class="chevron-container">
+        <!-- <div class="chevron-container">
           <img
             class="chevron-down"
             src="./assets/chevron-down.png"
             alt="chevron-down"
           />
-        </div>
+        </div> -->
       </div>
 
       <div class="transport-buttons">
@@ -49,9 +45,9 @@
         <div class="transport-btn play-container">
           <img src="./assets/GlobalPlay.svg" alt="play button" />
         </div>
-        <div class="transport-btn cycle-container">
+        <!-- <div class="transport-btn cycle-container">
           <img src="./assets/GlobalRecord.svg" alt="cycle button" />
-        </div>
+        </div> -->
       </div>
 
       <div class="pattern-button-container">
