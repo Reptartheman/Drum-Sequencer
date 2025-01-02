@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatSketch-DRUMS</title>
+    <link rel="stylesheet" href="./assets/doodle.css">
     <link rel="stylesheet" href="./assets/style.css" />
+    
   </head>
   <body>
     <header class="header">
@@ -15,10 +17,19 @@
 
     <section class="global-transport">
       <div class="tempo-container">
+        <input
+          id="tempoSlider"
+          type="range"
+          min="20"
+          max="260"
+          step="1"
+          class="slider"
+          value="120"
+        />
         
-        <input id="tempoSlider" type="range" min="20" max="260" step="1" class="slider" value="120" />
+        <wired-button elevation="2" id="decrementTempo">-</wired-button>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
-        
+        <wired-button elevation="2" id="incrementTempo">+</wired-button>
       </div>
 
       <div class="kit-container">
@@ -51,10 +62,27 @@
       </div>
 
       <div class="pattern-button-container">
-        <button class="pattern-option-button" id="clearButton">Clear Sketch</button>
-        <button class="pattern-option-button" id="exportButton">Export Sketch</button>
+        <button class="pattern-option-button" id="clearButton">
+          Clear Sketch
+        </button>
+        <button class="pattern-option-button" id="exportButton">
+          Export Sketch
+        </button>
       </div>
     </section>
+
+    <section class="modal hidden enter-modal">
+      <div>
+        <h3>Are you sure you want to clear your pattern?</h3>
+      </div>
+      <div class="modal-btn-container" id="modalBtnContainer">
+        <button class="pattern-option-button" id="yesBtn">Yes</button>
+      <button class="pattern-option-button" id="noBtn">No</button>
+      </div>
+      
+    </section>
+    
+    <div class="overlay hidden"></div>
 
     <div class="sequencer-container">
       <div class="metronome-img">
@@ -117,5 +145,6 @@
 
     <script type="module" src="./scripts/app.js"></script>
     <script type="module" src="./scripts/drumLibrary.js"></script>
+    <script type="module" src="https://unpkg.com/wired-elements/lib/wired-button.js?module"></script>
   </body>
 </html>

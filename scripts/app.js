@@ -44,6 +44,11 @@ const domElements = {
   transportTimeDisplay: document.getElementById("transportTimeDisplay"),
   measuresContainer: document.getElementById("measuresContainer"),
   timeLineItems: document.querySelectorAll(".timeline-item"),
+  modal: document.querySelector(".modal"),
+  overlay: document.querySelector(".overlay"),
+  modalBtnContainer: document.getElementById("modalBtnContainer"),
+  modalYes: document.getElementById("yesBtn"),
+  modalNo: document.getElementById("noBtn"),
   handleKeyUp: (e) => {
     const key = e.key.toLowerCase();
     const drumIndex = keyToDrum[key];
@@ -72,6 +77,14 @@ const domElements = {
       });
     });
   },
+  openModal: () => {
+    domElements.modal.classList.remove("hidden");
+    domElements.overlay.classList.remove("hidden");
+  },
+  closeModal: () => {
+    domElements.modal.classList.add("hidden");
+    domElements.overlay.classList.add("hidden");
+  }
 };
 const drumLabels = [
   domElements.kickLabel,
@@ -322,7 +335,7 @@ function updateTempoDisplay() {
   )} BPM`;
 }
 
-/* transportItems.incrementTempoButton.addEventListener("click", () => {
+transportItems.incrementTempoButton.addEventListener("click", () => {
   transport.bpm.value += 1;
   updateTempoDisplay();
 });
@@ -332,7 +345,7 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
     transport.bpm.value -= 1;
     updateTempoDisplay();
   }
-}); */
+});
 
 drumLogic.renderGridSubdivisions();
 
@@ -350,10 +363,18 @@ document.addEventListener("mouseup", () => {
   hasPlayedSound = false;
 });
 
-transportItems.clearButton.addEventListener(
-  "click",
-  transportItems.clearPattern
-);
+transportItems.clearButton.addEventListener("click", domElements.openModal);
+
+domElements.modalBtnContainer.addEventListener("click", (e) => {
+  if (e.target.id === "yesBtn") {
+    transportItems.clearPattern();
+    setTimeout(() => {
+      domElements.closeModal();
+    }, 50);
+  } else {
+    domElements.closeModal();
+  }
+})
 
 drumLabels.forEach((label) => {
   label.addEventListener("transitionend", (e) => {
@@ -375,8 +396,6 @@ transportItems.exportButton.addEventListener(
 tempoSlider.addEventListener("input", (e) => {
   updateBPM(parseInt(e.target.value));
 });
-
-
 
 
 domElements.handleDrumLabelClick(drumLabels);
