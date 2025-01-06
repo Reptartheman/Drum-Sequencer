@@ -17,15 +17,14 @@
 
     <section class="global-transport">
       <div class="tempo-container">
-        <input
+        <wired-slider
           id="tempoSlider"
           type="range"
           min="20"
           max="260"
           step="1"
           class="slider"
-          value="120"
-        />
+          value="120"> </wired-slider>
         
         <wired-button elevation="2" id="decrementTempo">-</wired-button>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
@@ -62,12 +61,12 @@
       </div>
 
       <div class="pattern-button-container">
-        <button class="pattern-option-button" id="clearButton">
+        <wired-button class="pattern-option-button" id="clearButton">
           Clear Sketch
-        </button>
-        <button class="pattern-option-button" id="exportButton">
+        </wired-button>
+        <wired-button class="pattern-option-button" id="exportButton">
           Export Sketch
-        </button>
+        </wired-button>
       </div>
     </section>
 
@@ -145,6 +144,6 @@
 
     <script type="module" src="./scripts/app.js"></script>
     <script type="module" src="./scripts/drumLibrary.js"></script>
-    <script type="module" src="https://unpkg.com/wired-elements/lib/wired-button.js?module"></script>
+    <script type="module" src="https://unpkg.com/wired-elements?module"></script>
   </body>
 </html>

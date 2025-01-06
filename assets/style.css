@@ -86,7 +86,7 @@ img {
 .global-transport {
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, auto);
   align-items: center;
   justify-items: center;
 
@@ -115,45 +115,7 @@ span.tempo-display {
 }
 
 
-input {
-  --c: var(--kickBackGroundHover); /* active color */
-  --g: 1px; /* the gap */
-  --l: 4px; /* line thickness*/
-  --s: 30px; /* thumb size*/
-  
-  width: 50%;
-  height: var(--size-24); /* needed for Firefox*/
-  -webkit-appearance :none;
-  -moz-appearance :none;
-  appearance :none;
-  background: none;
-  cursor: pointer;
-  /* outline: 2px dashed #000; */
-  overflow: hidden;
-}
 
-/* chromium */
-input[type="range" i]::-webkit-slider-thumb{
-  height: var(--size-24);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  box-shadow: 0 0 0 var(--l) inset var(--c);
-  background: url('./FADERKnob.png');
-  border-image: linear-gradient(90deg,var(--c) 50%,#ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g)); 
-  -webkit-appearance: none;
-  appearance: none;
-}
-/* Firefox */
-input[type="range"]::-moz-range-thumb {
-  height: var(--s);
-  width: var(--s);
-  background: none;
-  border-radius: 50%;
-  box-shadow: 0 0 0 var(--l) inset var(--c);
-  border-image: linear-gradient(90deg,var(--c) 50%,#ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g)); 
-  -moz-appearance: none;
-  appearance: none;
-}
 
 
 /* styles.css */
@@ -238,11 +200,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .pattern-option-button {
-  font-family: var(--main-font);
-  font-size: var(--size-16);
-  border-radius: 5px;
-  background-color: transparent;
-  padding: 5px;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -568,7 +525,7 @@ p.beat-count {
 }
 
 .timeline-item.playing {
-  box-shadow: 0 0 10px 5px var(--hiHatBackGround);
+  outline: 3px groove var(--kickBackGround);
 }
 
 

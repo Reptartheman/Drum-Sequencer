@@ -393,7 +393,7 @@ transportItems.exportButton.addEventListener(
 
 
 
-tempoSlider.addEventListener("input", (e) => {
+tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
 
