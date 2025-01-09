@@ -152,18 +152,14 @@ span.tempo-display {
 }
 
 .kit-container {
-  background: transparent;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: #000000;
-  border-width: 1px;
-  width: 240px;
-  height: 37px;
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.kit-container wired-button {
+  font-size: var(--size-10);
 }
 
 .scale-dropdown-item {
@@ -201,41 +197,23 @@ span.tempo-display {
 
 .pattern-option-button {
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.pattern-option-button:hover {
+.pattern-option-button:hover, .modal-option-button:hover {
   background-color: var(--beatTwo-backGround);
 }
 
-.modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  gap: 0.4rem;
-  width: 350px;
-  padding: 1.3rem;
-  min-height: 250px;
-  position: absolute;
-  top: 38%;
-  bottom: 50%;
-  left: 41%;
-  background-color: var(--beatOne-backGround);
-  border: var(--beat-border);
-  border-radius: 15px;
-  box-shadow: -18px 18px 100px var(--rimBackGroundNote);
-  z-index: 2;
-}
 
 .modal-btn-container {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   gap: var(--size-10);
+  padding: var(--size-20);
 }
 
-.modal-btn-container .pattern-option-button {
-  width: 30%;
+.modal-option-button {
+  font-size: var(--size-18);
 }
 
 .modal h3 {
@@ -244,40 +222,6 @@ span.tempo-display {
   text-align: center;
 }
 
-.enter-modal {
-  animation: scale-in-bl 0.3s linear 0s 1 normal none;
-}
-
-@keyframes scale-in-bl {
-			
-  0% {
-    transform:scale(0);
-    transform-origin:0% 100%;
-    opacity:1;
-  }
-  100% {
-    transform:scale(1);
-    transform-origin:0% 100%;
-    opacity:1;
-  }
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
-  z-index: 1;
-}
-
-.hidden {
-  display: none;
-}
 
 .measures-container {
   grid-column: 2 / span 36;

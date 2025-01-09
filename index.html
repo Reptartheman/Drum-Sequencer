@@ -32,7 +32,7 @@
       </div>
 
       <div class="kit-container">
-        <p>Kit selection coming soon!</p>
+        <wired-button elevation="2">Kit selection coming soon!</wired-button>
         <div id="drumkitDropdownContent" class="drumkit-dropdown-content">
           <!-- dynamically render kits -->
         </div>
@@ -70,18 +70,16 @@
       </div>
     </section>
 
-    <section class="modal hidden enter-modal">
+    <wired-dialog elevation="2" class="modal">
       <div>
         <h3>Are you sure you want to clear your pattern?</h3>
       </div>
       <div class="modal-btn-container" id="modalBtnContainer">
-        <button class="pattern-option-button" id="yesBtn">Yes</button>
-      <button class="pattern-option-button" id="noBtn">No</button>
+        <wired-button class="modal-option-button" id="yesBtn">Yes</wired-button>
+      <wired-button class="modal-option-button" id="noBtn">No</wired-button>
       </div>
       
-    </section>
-    
-    <div class="overlay hidden"></div>
+    </wired-dialog>
 
     <div class="sequencer-container">
       <div class="metronome-img">
