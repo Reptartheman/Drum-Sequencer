@@ -86,7 +86,7 @@ img {
 .global-transport {
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, auto);
   align-items: center;
   justify-items: center;
 
@@ -115,45 +115,7 @@ span.tempo-display {
 }
 
 
-input {
-  --c: var(--kickBackGroundHover); /* active color */
-  --g: 1px; /* the gap */
-  --l: 4px; /* line thickness*/
-  --s: 30px; /* thumb size*/
-  
-  width: 50%;
-  height: var(--size-24); /* needed for Firefox*/
-  -webkit-appearance :none;
-  -moz-appearance :none;
-  appearance :none;
-  background: none;
-  cursor: pointer;
-  /* outline: 2px dashed #000; */
-  overflow: hidden;
-}
 
-/* chromium */
-input[type="range" i]::-webkit-slider-thumb{
-  height: var(--size-24);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  box-shadow: 0 0 0 var(--l) inset var(--c);
-  background: url('./FADERKnob.png');
-  border-image: linear-gradient(90deg,var(--c) 50%,#ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g)); 
-  -webkit-appearance: none;
-  appearance: none;
-}
-/* Firefox */
-input[type="range"]::-moz-range-thumb {
-  height: var(--s);
-  width: var(--s);
-  background: none;
-  border-radius: 50%;
-  box-shadow: 0 0 0 var(--l) inset var(--c);
-  border-image: linear-gradient(90deg,var(--c) 50%,#ababab 0) 0 1/calc(50% - var(--l)/2) 100vw/0 calc(100vw + var(--g)); 
-  -moz-appearance: none;
-  appearance: none;
-}
 
 
 /* styles.css */
@@ -175,27 +137,29 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .metronome-button.active {
-  background-color: rgba(15, 208, 186, 0.445); /* Metronome active color */
+  background-color: rgba(189, 85, 237, 0.444);
+  box-shadow: 0 0 10px 5px rgba(189, 85, 237, 0.444);
 }
 
-.plus-container,
-.minus-container {
+.tempo-btn {
+  font-size: var(--size-20);
+  width: 25%;
+  background-color: transparent;
+  border-style: solid;
+  border-width: 5px;
+  border-image: url('./button.svg') 10 10 10 10 stretch stretch;
   cursor: pointer;
 }
 
 .kit-container {
-  background: transparent;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: #000000;
-  border-width: 1px;
-  width: 296px;
-  height: 37px;
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.kit-container wired-button {
+  font-size: var(--size-10);
 }
 
 .scale-dropdown-item {
@@ -232,19 +196,31 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .pattern-option-button {
-  font-family: var(--main-font);
-  font-size: var(--size-16);
-  border-radius: 5px;
-  background-color: transparent;
-  padding: 5px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.pattern-option-button:hover {
+.pattern-option-button:hover, .modal-option-button:hover {
   background-color: var(--beatTwo-backGround);
 }
 
+
+.modal-btn-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: var(--size-10);
+  padding: var(--size-20);
+}
+
+.modal-option-button {
+  font-size: var(--size-18);
+}
+
+.modal h3 {
+  font-size: var(--size-20);
+  margin: 0.4rem 0 0.2rem;
+  text-align: center;
+}
 
 
 .measures-container {
@@ -468,9 +444,6 @@ p.beat-count {
   background-color: var(--kickBackGroundNote);
 }
 
-.kick-lane .subdivision.playing {
-  box-shadow: 0 0 10px 5px var(--kickBackGround);
-}
 .snare-lane {
   grid-row: 3 / span 1;
 }
@@ -478,9 +451,6 @@ p.beat-count {
   background-color: var(--snareBackGroundNote);
 }
 
-.snare-lane .subdivision.playing {
-  box-shadow: 0 0 10px 5px var(--snareBackGround);
-}
 
 .rim-lane {
   grid-row: 2 / span 1;
@@ -488,10 +458,6 @@ p.beat-count {
 
 .rim-lane .subdivision.active {
   background-color: var(--rimBackGroundNote);
-}
-
-.rim-lane .subdivision.playing {
-  box-shadow: 0 0 10px 5px var(--rimBackGround);
 }
 
 .hh-lane {
@@ -503,7 +469,7 @@ p.beat-count {
 }
 
 .timeline-item.playing {
-  box-shadow: 0 0 10px 5px var(--hiHatBackGround);
+  outline: 3px groove var(--kickBackGround);
 }
 
 

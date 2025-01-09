@@ -44,6 +44,12 @@ const domElements = {
   transportTimeDisplay: document.getElementById("transportTimeDisplay"),
   measuresContainer: document.getElementById("measuresContainer"),
   timeLineItems: document.querySelectorAll(".timeline-item"),
+  modal: document.querySelector("wired-dialog"),
+  overlay: document.querySelector(".overlay"),
+  modalBtnContainer: document.getElementById("modalBtnContainer"),
+  modalYes: document.getElementById("yesBtn"),
+  modalNo: document.getElementById("noBtn"),
+  events: ['click', 'mousedown', 'mouseup', 'mousemove', 'keypress'],
   handleKeyUp: (e) => {
     const key = e.key.toLowerCase();
     const drumIndex = keyToDrum[key];
@@ -72,6 +78,12 @@ const domElements = {
       });
     });
   },
+  openModal: () => {
+    domElements.modal.open = true;
+  },
+  closeModal: () => {
+    domElements.modal.open = false;
+  }
 };
 const drumLabels = [
   domElements.kickLabel,
@@ -102,7 +114,7 @@ const drumLogic = {
   },
   handleGridEventListeners: (arr) => {
     arr.forEach((lane, index) => {
-      lane.addEventListener("mousedown", async (e) => {
+      lane.addEventListener("mousedown", (e) => {
         const target = e.target;
         if (target.classList.contains("subdivision")) {
           isDragging = true;
@@ -111,20 +123,29 @@ const drumLogic = {
           target.classList.toggle("active");
 
           if (!hasPlayedSound && target.classList.contains("active")) {
-            await Tone.start();
             soundSources[index].start();
             hasPlayedSound = true;
           }
         }
       });
     });
+
+    /* FIX THE ABOVE FUNCTION
+      PROBLEM:
+        - adding a note works by clicking BUT...
+        - isDragging is causing a bug that makes REMOVING a note
+          not always work correctly.
+        - REMOVING isDragging completely solves the removing issue BUT
+          -- adds a new issue where you cannot click and drag.
+    make an array of event listeners
+    or object map of event listeners
+    for each lane's subdivisions, add those event listeners */
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
       const position = transport.position.split(":");
       const bars = parseInt(position[0], 10);
       const beats = parseInt(position[1], 10);
-      const sixteenths = parseInt(position[2], 10);
 
       beatCounter = (bars * 4 + beats) % totalSteps;
       console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
@@ -322,7 +343,7 @@ function updateTempoDisplay() {
   )} BPM`;
 }
 
-/* transportItems.incrementTempoButton.addEventListener("click", () => {
+transportItems.incrementTempoButton.addEventListener("click", () => {
   transport.bpm.value += 1;
   updateTempoDisplay();
 });
@@ -332,9 +353,9 @@ transportItems.decrementTempoButton.addEventListener("click", () => {
     transport.bpm.value -= 1;
     updateTempoDisplay();
   }
-}); */
+});
 
-drumLogic.renderGridSubdivisions();
+
 
 document.addEventListener("mousemove", (e) => {
   if (isDragging) {
@@ -350,10 +371,18 @@ document.addEventListener("mouseup", () => {
   hasPlayedSound = false;
 });
 
-transportItems.clearButton.addEventListener(
-  "click",
-  transportItems.clearPattern
-);
+transportItems.clearButton.addEventListener("click", domElements.openModal);
+
+domElements.modalBtnContainer.addEventListener("click", (e) => {
+  if (e.target.id === "yesBtn") {
+    transportItems.clearPattern();
+    setTimeout(() => {
+      domElements.closeModal();
+    }, 50);
+  } else {
+    domElements.closeModal();
+  }
+})
 
 drumLabels.forEach((label) => {
   label.addEventListener("transitionend", (e) => {
@@ -372,14 +401,13 @@ transportItems.exportButton.addEventListener(
 
 
 
-tempoSlider.addEventListener("input", (e) => {
+tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
 
 
-
-
 domElements.handleDrumLabelClick(drumLabels);
+drumLogic.renderGridSubdivisions();
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
 drumLogic.setBeatBlock();

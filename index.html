@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatSketch-DRUMS</title>
+    <link rel="stylesheet" href="./assets/doodle.css">
     <link rel="stylesheet" href="./assets/style.css" />
+    
   </head>
   <body>
     <header class="header">
@@ -15,14 +17,22 @@
 
     <section class="global-transport">
       <div class="tempo-container">
+        <wired-slider
+          id="tempoSlider"
+          type="range"
+          min="20"
+          max="260"
+          step="1"
+          class="slider"
+          value="120"> </wired-slider>
         
-        <input id="tempoSlider" type="range" min="20" max="260" step="1" class="slider" value="120" />
+        <wired-button elevation="2" id="decrementTempo">-</wired-button>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
-        
+        <wired-button elevation="2" id="incrementTempo">+</wired-button>
       </div>
 
       <div class="kit-container">
-        <p>Kit selection coming soon!</p>
+        <wired-button elevation="2">Kit selection coming soon!</wired-button>
         <div id="drumkitDropdownContent" class="drumkit-dropdown-content">
           <!-- dynamically render kits -->
         </div>
@@ -51,10 +61,25 @@
       </div>
 
       <div class="pattern-button-container">
-        <button class="pattern-option-button" id="clearButton">Clear Sketch</button>
-        <button class="pattern-option-button" id="exportButton">Export Sketch</button>
+        <wired-button class="pattern-option-button" id="clearButton">
+          Clear Sketch
+        </wired-button>
+        <wired-button class="pattern-option-button" id="exportButton">
+          Export Sketch
+        </wired-button>
       </div>
     </section>
+
+    <wired-dialog elevation="2" class="modal">
+      <div>
+        <h3>Are you sure you want to clear your pattern?</h3>
+      </div>
+      <div class="modal-btn-container" id="modalBtnContainer">
+        <wired-button class="modal-option-button" id="yesBtn">Yes</wired-button>
+      <wired-button class="modal-option-button" id="noBtn">No</wired-button>
+      </div>
+      
+    </wired-dialog>
 
     <div class="sequencer-container">
       <div class="metronome-img">
@@ -117,5 +142,6 @@
 
     <script type="module" src="./scripts/app.js"></script>
     <script type="module" src="./scripts/drumLibrary.js"></script>
+    <script type="module" src="https://unpkg.com/wired-elements?module"></script>
   </body>
 </html>
