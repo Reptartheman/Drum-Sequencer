@@ -196,7 +196,7 @@ const drumLogic = {
 };
 
 const transportItems = {
-  metronomeButton: document.getElementById("metronomeButton"),
+  metronomeToggle: document.querySelector("wired-toggle"),
   playButton: document.querySelector(".play-container img"),
   pauseButton: document.querySelector(".pause-container img"),
   stopButton: document.querySelector(".stop-container img"),
@@ -246,7 +246,7 @@ const transportItems = {
 
   toggleMetronome: () => {
     isMetronomeOn = !isMetronomeOn;
-    transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
+    transportItems.metronomeToggle.checked = true;
 
     if (isMetronomeOn) {
       if (!metronomeLoop) {
@@ -311,8 +311,8 @@ const transportItems = {
   },
 };
 
-transportItems.metronomeButton.addEventListener(
-  "click",
+transportItems.metronomeToggle.addEventListener(
+  "change",
   transportItems.toggleMetronome.bind(transportItems)
 );
 
