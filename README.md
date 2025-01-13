@@ -77,14 +77,14 @@ Instructions
 
 Clone the repository:
 
-git clone https://github.com/username/drum-sequencer.git
+git clone https://github.com/Reptartheman/Drum-Sequencer.git
 cd drum-sequencer
 
 Open index.html in your browser to launch the sequencer.
 
 Customize as needed by editing the provided JavaScript, HTML, and CSS files.
 
-How to Use
+# How to Use
 
 Open the application in a web browser.
 

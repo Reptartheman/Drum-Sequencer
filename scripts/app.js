@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import drumKits from "./drumLibrary.js";
+import rough from 'roughjs';
 
 const transport = Tone.getTransport();
 let bpm = transport.bpm.value;
@@ -31,8 +31,21 @@ const keyToDrum = {
   d: 3,
 };
 
+/* let roughSVG = rough.svg(document.getElementById("svg"));
+
+let node = roughSVG.rectangle(0, 0, 54, 54, {
+  fill: 'red',
+  hachureAngle: 60, // angle of hachure,
+  hachureGap: 8
+}); // x, y, width, height
+svg.appendChild(node); */
+
+
+
+
 const domElements = {
   drumLabelContainer: document.querySelectorAll(".drum-label-container"),
+  sequencerContainer: document.getElementById("drums"),
   kickLabel: document.getElementById("kickLabel"),
   snareLabel: document.getElementById("snareLabel"),
   hiHatLabel: document.getElementById("HHLabel"),
@@ -119,9 +132,9 @@ const drumLogic = {
         if (target.classList.contains("subdivision")) {
           isDragging = true;
           hasPlayedSound = false;
-
           target.classList.toggle("active");
-
+            
+          console.log(e.type);
           if (!hasPlayedSound && target.classList.contains("active")) {
             soundSources[index].start();
             hasPlayedSound = true;
@@ -129,17 +142,6 @@ const drumLogic = {
         }
       });
     });
-
-    /* FIX THE ABOVE FUNCTION
-      PROBLEM:
-        - adding a note works by clicking BUT...
-        - isDragging is causing a bug that makes REMOVING a note
-          not always work correctly.
-        - REMOVING isDragging completely solves the removing issue BUT
-          -- adds a new issue where you cannot click and drag.
-    make an array of event listeners
-    or object map of event listeners
-    for each lane's subdivisions, add those event listeners */
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
@@ -240,8 +242,6 @@ const transportItems = {
 
     metronomeLoop.start(0);
     metronomeLoop.mute = false;
-
-    drumLogic.handleBeatCount();
   },
 
   toggleMetronome: () => {
@@ -330,34 +330,11 @@ transportItems.stopButton.addEventListener(
   transportItems.stopSequence
 );
 
-const updateBPM = (newBPM) => {
-  transport.bpm.value = bpm;
-  tempoSlider.value = bpm;
-  bpm = newBPM;
-  updateTempoDisplay();
-};
-
-function updateTempoDisplay() {
-  transportItems.tempoDisplay.textContent = `${Math.round(
-    transport.bpm.value
-  )} BPM`;
-}
-
-transportItems.incrementTempoButton.addEventListener("click", () => {
-  transport.bpm.value += 1;
-  updateTempoDisplay();
-});
-
-transportItems.decrementTempoButton.addEventListener("click", () => {
-  if (transport.bpm.value > 1) {
-    transport.bpm.value -= 1;
-    updateTempoDisplay();
-  }
-});
 
 
+domElements.sequencerContainer.addEventListener("mousemove", (e) => {
+  console.log(e.type);
 
-document.addEventListener("mousemove", (e) => {
   if (isDragging) {
     const target = document.elementFromPoint(e.clientX, e.clientY);
     if (target && target.classList.contains("subdivision")) {
@@ -366,7 +343,9 @@ document.addEventListener("mousemove", (e) => {
   }
 });
 
-document.addEventListener("mouseup", () => {
+domElements.sequencerContainer.addEventListener("mouseup", (e) => {
+  console.log(e.type);
+
   isDragging = false;
   hasPlayedSound = false;
 });
@@ -399,6 +378,57 @@ transportItems.exportButton.addEventListener(
   transportItems.exportMIDI.bind(transportItems)
 );
 
+const updateBPM = (newBPM) => {
+  bpm = newBPM;
+  transport.bpm.value = bpm;
+  tempoSlider.value = bpm;
+  updateTempoDisplay();
+};
+
+
+function updateTempoDisplay() {
+  transportItems.tempoDisplay.textContent = `${Math.round(
+    transport.bpm.value
+  )} BPM`;
+}
+
+let intervalId;
+
+const startAdjustingTempo = (adjustmentFunction) => {
+  adjustmentFunction();
+  intervalId = setInterval(adjustmentFunction, 100);
+};
+
+const stopAdjustingTempo = () => {
+  clearInterval(intervalId);
+};
+
+
+transportItems.incrementTempoButton.addEventListener("mousedown", () => {
+  startAdjustingTempo(() => {
+    transport.bpm.value += 1;
+    tempoSlider.value = Math.round(transport.bpm.value);
+    updateTempoDisplay();
+  });
+});
+
+transportItems.incrementTempoButton.addEventListener("mouseup", stopAdjustingTempo);
+transportItems.incrementTempoButton.addEventListener("mouseleave", stopAdjustingTempo);
+
+transportItems.decrementTempoButton.addEventListener("mousedown", () => {
+  startAdjustingTempo(() => {
+    if (transport.bpm.value > 1) {
+      transport.bpm.value -= 1;
+      tempoSlider.value = Math.round(transport.bpm.value);
+      updateTempoDisplay();
+    }
+  });
+});
+
+transportItems.decrementTempoButton.addEventListener("mouseup", stopAdjustingTempo);
+transportItems.decrementTempoButton.addEventListener("mouseleave", stopAdjustingTempo);
+
+
 
 
 tempoSlider.addEventListener("change", (e) => {
@@ -410,4 +440,5 @@ domElements.handleDrumLabelClick(drumLabels);
 drumLogic.renderGridSubdivisions();
 drumLogic.handleGridEventListeners(drumLanes);
 drumLogic.addSoundsToGrid(drumLanes);
+drumLogic.handleBeatCount();
 drumLogic.setBeatBlock();

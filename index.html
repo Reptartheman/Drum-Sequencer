@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatSketch-DRUMS</title>
-    <link rel="stylesheet" href="./assets/doodle.css">
     <link rel="stylesheet" href="./assets/style.css" />
     
   </head>
@@ -31,19 +30,7 @@
         <wired-button elevation="2" id="incrementTempo">+</wired-button>
       </div>
 
-      <div class="kit-container">
-        <wired-button elevation="2">Kit selection coming soon!</wired-button>
-        <div id="drumkitDropdownContent" class="drumkit-dropdown-content">
-          <!-- dynamically render kits -->
-        </div>
-        <!-- <div class="chevron-container">
-          <img
-            class="chevron-down"
-            src="./assets/chevron-down.png"
-            alt="chevron-down"
-          />
-        </div> -->
-      </div>
+
 
       <div class="transport-buttons">
         <div class="transport-btn stop-container">
@@ -132,7 +119,7 @@
         </div>
       </section>
 
-      <div id="drums" class="drum-track instrument-track">
+      <div id="drums" class="drum-track drum-grid">
         <div id="hiHatLane" class="drum-lane hh-lane"></div>
         <div id="rimLane" class="drum-lane rim-lane"></div>
         <div id="snareLane" class="drum-lane snare-lane"></div>
