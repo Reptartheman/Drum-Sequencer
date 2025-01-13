@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@tonejs/midi": "^2.0.28",
+    "roughjs": "^4.6.6",
     "tone": "^15.0.4",
     "vite": "^5.4.7"
   },

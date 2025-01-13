@@ -31,11 +31,13 @@ document.addEventListener("mousemove", (e) => {
       target.classList.add("active");
     }
   }
+  console.log(e.type);
 });
 
-document.addEventListener("mouseup", () => {
+document.addEventListener("mouseup", (e) => {
   isDragging = false;
   hasPlayedSound = false;
+  console.log(e.type);
 });
 
 

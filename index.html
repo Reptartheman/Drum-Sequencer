@@ -30,19 +30,7 @@
         <wired-button elevation="2" id="incrementTempo">+</wired-button>
       </div>
 
-      <div class="kit-container">
-        <wired-button elevation="2">Kit selection coming soon!</wired-button>
-        <div id="drumkitDropdownContent" class="drumkit-dropdown-content">
-          <!-- dynamically render kits -->
-        </div>
-        <!-- <div class="chevron-container">
-          <img
-            class="chevron-down"
-            src="./assets/chevron-down.png"
-            alt="chevron-down"
-          />
-        </div> -->
-      </div>
+
 
       <div class="transport-buttons">
         <div class="transport-btn stop-container">
@@ -81,9 +69,11 @@
     </wired-dialog>
 
     <div class="sequencer-container">
-  
-      <wired-toggle></wired-toggle>
-
+      <div class="metronome-img">
+        <button class="metronome-button" id="metronomeButton">
+          <img src="./assets/metronome.png" alt="metronome" />
+        </button>
+      </div>
       <div class="drum-stack">
         <div id="HHLabel" class="drum-label-container HH-label">
           <p id="hihat" class="drum-label">HH</p>
@@ -129,7 +119,7 @@
         </div>
       </section>
 
-      <div id="drums" class="drum-track instrument-track">
+      <div id="drums" class="drum-track drum-grid">
         <div id="hiHatLane" class="drum-lane hh-lane"></div>
         <div id="rimLane" class="drum-lane rim-lane"></div>
         <div id="snareLane" class="drum-lane snare-lane"></div>
@@ -140,6 +130,5 @@
     <script type="module" src="./scripts/app.js"></script>
     <script type="module" src="./scripts/drumLibrary.js"></script>
     <script type="module" src="https://unpkg.com/wired-elements?module"></script>
-    <script type="module" src="https://unpkg.com/wired-elements/lib/wired-toggle.js?module"></script>
   </body>
 </html>
