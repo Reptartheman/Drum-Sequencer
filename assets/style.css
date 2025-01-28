@@ -7,15 +7,15 @@
   --kickBackGround: rgba(178, 13, 255, 0.6);
   --kickBackGroundNote: rgba(190, 86, 239, 0.346);
   --kickBackGroundHover: rgb(162, 23, 226);
-  --snareBackGround: rgba(146, 189, 220, 1);
-  --snareBackGroundNote: rgba(85, 128, 158, 0.365);
-  --snareBackGroundHover: rgba(33, 101, 150, 0.8);
-  --rimBackGround: rgba(94, 198, 227, 1);
-  --rimBackGroundNote: rgba(151, 218, 237, 0.448);
-  --rimBackGroundHover: rgba(15, 144, 236, 0.8);
+  --snareBackGround: rgba(100, 188, 250);
+  --snareBackGroundNote: rgba(100, 187, 250, 0.582);
+  --snareBackGroundHover: rgba(24, 86, 141, 0.8);
+  --rimBackGround: rgba(255, 143, 0);
+  --rimBackGroundNote: rgba(255, 190, 6);
+  --rimBackGroundHover: rgba(207, 111, 2, 0.982);
   --hiHatBackGround: rgba(30, 193, 21, 1);
-  --hiHatBackGroundNote: rgba(103, 237, 96, 0.391);
-  --hiHatBackGroundHover: rgb(35, 174, 28);
+  --hiHatBackGroundNote: rgba(96, 237, 112, 0.391);
+  --hiHatBackGroundHover: rgb(24, 115, 20);
   --test-border: 3px solid red;
   --test-border2: 2px solid green;
   --beat-border: 1px solid black;
@@ -111,6 +111,8 @@ img {
 }
 
 span.tempo-display {
+  min-width: 80px;
+    text-align: center;
   font-size: var(--size-20);
 }
 
@@ -141,29 +143,9 @@ span.tempo-display {
   box-shadow: 0 0 10px 5px rgba(189, 85, 237, 0.444);
 }
 
-.kit-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.kit-container wired-button {
-  font-size: var(--size-10);
-}
-
-.scale-dropdown-item {
-  align-self: center;
-  justify-self: center;
-  font-size: var(--size-26);
-}
-
-.chevron-down {
-  width: 16px;
-  height: 12px;
-  position: absolute;
-  left: 256px;
-  top: 5px;
+.click {
+  font-family: var(--main-font);
+  font-size: var(--size-18);
 }
 
 .transport-buttons {
@@ -174,10 +156,24 @@ span.tempo-display {
 .transport-btn {
   display: flex;
   cursor: pointer;
+  border-radius: 50%;
+  transition: 0.2s;
 }
 
 .transport-btn img {
   align-self: center;
+}
+
+.play-container:hover {
+  background-color: rgba(118, 202, 114, 0.31);
+}
+
+.pause-container:hover {
+  background-color: rgba(255, 192, 18, 0.31);
+}
+
+.stop-container:hover {
+  background-color: var(--kickBackGroundNote);
 }
 
 .pattern-button-container {
@@ -219,63 +215,9 @@ span.tempo-display {
   flex-direction: row;
 } 
 
-.sketch-length-container {
-  display: flex;
-  grid-column: 1 / span 4;
-  grid-row: 1 / span 1;
-}
 
 .timeline-item {
   width: 100%;
-}
-
-.sketch-length-dropdown {
-  position: relative;
-  display: flex;
-  width: 99%;
-  justify-content: space-evenly;
-}
-
-
-
-.dropbtn {
-  background-color: transparent;
-  font-family: var(--main-font);
-  font-size: var(--size-16);
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.dropbtn:hover {
-  background-color: var(--beatTwo-backGround);
-}
-
-.dropdown-content, .drumkit-dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 999;
-  border-radius: 5px;
-}
-
-.dropdown-content p, p.drumkit-dropdown-item {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  cursor: pointer;
-}
-
-.dropdown-content p:hover {
-  background-color: var(--beatOne-backGround);
-}
-
-
-.sketch-length-dropdown:hover .dropdown-content, .kit-container:hover .drumkit-dropdown-content {
-  display: block;
 }
 
 
@@ -347,7 +289,7 @@ p.beat-count {
 }
 
 .drum-label-container:active {
-  transform: scale(0.999);
+  transform: scale(0.11111);
 }
 
 
@@ -369,7 +311,7 @@ p.beat-count {
 
 .SNARE-label:hover, .SNARE-label.pressed {
   background-color: var(--snareBackGroundHover);
-  background-color: var(--snareBackGroundNote);
+  box-shadow: 0 0 10px 5px var(--snareBackGround);
   color: var(--main-backGround);
 }
 
@@ -462,7 +404,7 @@ p.beat-count {
 }
 
 .timeline-item.playing {
-  outline: 3px groove var(--kickBackGround);
+  background-color: var(--snareBackGroundNote);
 }
 
 

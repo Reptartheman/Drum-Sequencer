@@ -1,44 +1,39 @@
-const domEvents = {
-  click: 'click',
-
-}
-
-const handleGridEventListeners = (arr, domEvent) => {
-  arr.forEach((lane, index) => {
-    lane.addEventListener(domEvent, (e) => {
-      let target = e.target;
-      if (target.classList.contains("subdivision")) {
-        isDragging = true;
-        hasPlayedSound = false;
-
-
-
-        target.classList.toggle("active");
-
-        if (!hasPlayedSound && target.classList.contains("active")) {
-          soundSources[index].start();
-          hasPlayedSound = true;
-        }
+const createSoundSources = () => {
+  // First, create an object that holds all our sound sources
+  const sources = {
+      kick: new Tone.Player("./sounds/kick.wav").toDestination(),
+      snare: new Tone.Player("./sounds/snare.wav").toDestination(),
+      hihat: new Tone.Player("./sounds/hihat.wav").toDestination(),
+      rim: new Tone.Player("./sounds/rim.wav").toDestination(),
+      metronome: new Tone.Synth().toDestination()
+  };
+  
+  // Return methods to interact with our sounds
+  return {
+      // Method to play any sound by name
+      play(soundName) {
+          sources[soundName]?.start();
+      },
+      
+      // Method to get a specific sound source if needed
+      getSource(soundName) {
+          return sources[soundName];
+      },
+      
+      // Get all sources as an array (for compatibility with existing code)
+      getAllSources() {
+          return [
+              sources.kick,
+              sources.snare,
+              sources.hihat,
+              sources.rim
+          ];
       }
-    });
-  });
-}
+  };
+};
 
-document.addEventListener("mousemove", (e) => {
-  if (isDragging) {
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    if (target && target.classList.contains("subdivision")) {
-      target.classList.add("active");
-    }
-  }
-  console.log(e.type);
-});
-
-document.addEventListener("mouseup", (e) => {
-  isDragging = false;
-  hasPlayedSound = false;
-  console.log(e.type);
-});
+// Initialize our sound sources
+const soundManager = createSoundSources();
 
 
 
