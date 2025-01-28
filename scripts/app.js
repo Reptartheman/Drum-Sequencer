@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import rough from "roughjs";
+
 
 
 
@@ -54,6 +54,10 @@ const createSoundSources = () => {
     metronome: new Tone.Synth().toDestination(),
   };
 
+  Object.values(sources).forEach(source => {
+    source.volume.value = -8;
+  });
+  
   return {
     play(soundName) {
       sources[soundName]?.start();
@@ -67,6 +71,7 @@ const createSoundSources = () => {
       return [sources.kick, sources.snare, sources.hihat, sources.rim];
     },
   };
+  
 };
 
 const keyToDrum = {
@@ -371,8 +376,6 @@ transportItems.stopButton.addEventListener(
 );
 
 domElements.sequencerContainer.addEventListener("mousemove", (e) => {
-  console.log(e.type);
-
   if (sequencerState.isDragging) {
     const target = document.elementFromPoint(e.clientX, e.clientY);
     if (target && target.classList.contains("subdivision")) {

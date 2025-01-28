@@ -9,8 +9,8 @@
   </head>
   <body>
     <header class="header">
-      <div class="img-container">
-        <img class="logo" src="./assets/LOGO.png" />
+      <div class="logo-container">
+        <img class="logo" src="./assets/Logo_update_1.svg" />
       </div>
     </header>
 
@@ -70,10 +70,9 @@
 
     <div class="sequencer-container">
       <div class="metronome-img">
-        <button class="metronome-button" id="metronomeButton">
-          <p class="click">Click</p>
-          
-        </button>
+        <svg class="metronome-button" id="metronomeButton">
+          <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="click">Click</text>
+        </svg>
       </div>
       <div class="drum-stack">
         <div id="HHLabel" class="drum-label-container HH-label">
@@ -128,8 +127,8 @@
       </div>
     </div>
 
-    <script type="module" src="./scripts/app.js"></script>
-    <script type="module" src="./scripts/drumLibrary.js"></script>
     <script type="module" src="https://unpkg.com/wired-elements?module"></script>
+    <script type="module" src="./scripts/roughCanvas.js"></script>
+    <script type="module" src="./scripts/app.js"></script>
   </body>
 </html>
