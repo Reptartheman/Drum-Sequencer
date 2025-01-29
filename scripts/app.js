@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { setMetronomeState } from './roughCanvas';
+//import { setMetronomeState } from './roughCanvas';
 
 document.addEventListener("DOMContentLoaded", () => {
   domElements.handleDrumLabelClick(drumLabels);
@@ -253,7 +253,7 @@ const drumLogic = {
 };
 
 const transportItems = {
-  metronomeButton: document.getElementById("metronomeButton"),
+  metronomeButton: document.querySelector(".metronome-container"),
   playButton: document.querySelector(".play-container img"),
   pauseButton: document.querySelector(".pause-container img"),
   stopButton: document.querySelector(".stop-container img"),
@@ -302,8 +302,8 @@ const transportItems = {
 
   toggleMetronome: () => {
     sequencerState.isMetronomeOn = !sequencerState.isMetronomeOn;
-    //transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
-    setMetronomeState();
+    transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
+    //setMetronomeState();
     if (sequencerState.isMetronomeOn) {
       if (!metronomeLoop) {
         transportItems.playMetronome();

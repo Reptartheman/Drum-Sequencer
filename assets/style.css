@@ -69,6 +69,16 @@ img {
   max-width: 100%;
 }
 
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
 
 .logo-container {
   height: 100%;
@@ -145,29 +155,25 @@ span.tempo-display {
 } */
 
 .metronome-container {
-  width: 54px;
-  height: 54px;
+  background-image: url('./Click-notactiveR.svg');
+  background-size: 100%;
+  width: 55px;
+  height: 55px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.metronome-button {
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  border: none;
   cursor: pointer;
 }
 
-/* .metronome-button.active {
-  background-color: rgba(189, 85, 237, 0.444);
-  box-shadow: 0 0 10px 5px rgba(189, 85, 237, 0.444);
-} */
+
+.metronome-container.active {
+  background-image: url('./Click-activeR.svg');
+}
 
 .click {
-  
   font-family: var(--main-font);
   font-size: var(--size-18);
+  
 }
 
 .transport-buttons {
