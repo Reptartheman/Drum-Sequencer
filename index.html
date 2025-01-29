@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatSketch-DRUMS</title>
     <link rel="stylesheet" href="./assets/style.css" />
-    
+    <link rel="preload" href="./assets/Logo_update_1.svg" as="image" />
+    <link rel="preload" href="./assets/Pause.svg" as="image" />
+    <link rel="preload" href="./assets/GlobalPlay.svg" as="image" />
+    <link rel="preload" href="./assets/Pause.svg" as="image" />
+
+    <script
+      defer
+      type="module"
+      src="https://unpkg.com/wired-elements?module"
+    ></script>
+    <script defer type="module" src="./scripts/roughCanvas.js"></script>
+    <script defer type="module" src="./scripts/app.js"></script>
   </head>
   <body>
     <header class="header">
-      <div class="img-container">
-        <img class="logo" src="./assets/LOGO.png" />
+      <div class="logo-container">
+        <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy"/>
       </div>
     </header>
 
@@ -23,24 +34,24 @@
           max="260"
           step="1"
           class="slider"
-          value="120"> </wired-slider>
-        
+          value="120"
+        >
+        </wired-slider>
+
         <wired-button elevation="2" id="decrementTempo">-</wired-button>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
         <wired-button elevation="2" id="incrementTempo">+</wired-button>
       </div>
 
-
-
       <div class="transport-buttons">
         <div class="transport-btn stop-container">
-          <img src="./assets/Stop.svg" alt="stop button" />
+          <img src="./assets/Stop.svg" alt="stop button" loading="lazy"/>
         </div>
         <div class="transport-btn pause-container">
-          <img src="./assets/GlobalPause.svg" alt="pause button" />
+          <img src="./assets/Pause.svg" alt="pause button" loading="lazy"/>
         </div>
         <div class="transport-btn play-container">
-          <img src="./assets/GlobalPlay.svg" alt="play button" />
+          <img src="./assets/GlobalPlay.svg" alt="play button" loading="lazy"/>
         </div>
         <!-- <div class="transport-btn cycle-container">
           <img src="./assets/GlobalRecord.svg" alt="cycle button" />
@@ -63,16 +74,23 @@
       </div>
       <div class="modal-btn-container" id="modalBtnContainer">
         <wired-button class="modal-option-button" id="yesBtn">Yes</wired-button>
-      <wired-button class="modal-option-button" id="noBtn">No</wired-button>
+        <wired-button class="modal-option-button" id="noBtn">No</wired-button>
       </div>
-      
     </wired-dialog>
 
     <div class="sequencer-container">
-      <div class="metronome-img">
-        <button class="metronome-button" id="metronomeButton">
-          <img src="./assets/metronome.png" alt="metronome" />
-        </button>
+      <div class="metronome-container">
+        <svg class="metronome-button" id="metronomeButton">
+          <text
+            x="50%"
+            y="50%"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            class="click"
+          >
+            Click
+          </text>
+        </svg>
       </div>
       <div class="drum-stack">
         <div id="HHLabel" class="drum-label-container HH-label">
@@ -126,9 +144,5 @@
         <div id="kickLane" class="drum-lane kick-lane"></div>
       </div>
     </div>
-
-    <script type="module" src="./scripts/app.js"></script>
-    <script type="module" src="./scripts/drumLibrary.js"></script>
-    <script type="module" src="https://unpkg.com/wired-elements?module"></script>
   </body>
 </html>

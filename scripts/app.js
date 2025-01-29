@@ -1,46 +1,98 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import rough from 'roughjs';
+import { setMetronomeState } from './roughCanvas';
 
-const transport = Tone.getTransport();
-let bpm = transport.bpm.value;
-transport.loop = true;
-transport.loopStart = 0;
-transport.loopEnd = "2:0:0";
+document.addEventListener("DOMContentLoaded", () => {
+  domElements.handleDrumLabelClick(drumLabels);
+drumLogic.renderGridSubdivisions();
+drumLogic.handleGridEventListeners(drumLanes);
+drumLogic.addSoundsToGrid(drumLanes);
+drumLogic.handleBeatCount();
+drumLogic.setBeatBlock();
+});
+
+
+
 const midi = new Midi();
-const metronomeSource = new Tone.Synth().toDestination();
 const draw = Tone.getDraw();
-const soundSources = [
-  new Tone.Player("./sounds/kick.wav").toDestination(),
-  new Tone.Player("./sounds/snare.wav").toDestination(),
-  new Tone.Player("./sounds/hihat.wav").toDestination(),
-  new Tone.Player("./sounds/rim.wav").toDestination(),
-];
 const tempoSlider = document.getElementById("tempoSlider");
-let isDragging = false;
-let hasPlayedSound = false;
-let beatCounter = 0;
-let isMetronomeOn = false;
 let metronomeLoop;
-const totalSteps = 32;
 
-const keyToDrum = {
-  z: 0,
-  s: 1,
-  h: 2,
-  d: 3,
+
+
+
+const createSequencerState = () => {
+  const state = {
+    transport: Tone.getTransport(),
+    bpm: 120,
+    isDragging: false,
+    hasPlayedSound: false,
+    beatCounter: 0,
+    isMetronomeOn: false,
+    totalSteps: 32,
+
+    updateBPM(newBPM) {
+      this.bpm = newBPM;
+      this.transport.bpm.value = newBPM;
+      return this;
+    },
+
+    updateDragging(dragging) {
+      this.isDragging = dragging;
+      return this;
+    },
+
+    updateBeatCount(count) {
+      this.beatCounter = count % this.totalSteps;
+      return this;
+    },
+  };
+  state.transport.loop = true;
+  state.transport.loopStart = 0;
+  state.transport.loopEnd = "2:0:0";
+
+  return state;
 };
 
-/* let roughSVG = rough.svg(document.getElementById("svg"));
+const sequencerState = createSequencerState();
 
-let node = roughSVG.rectangle(0, 0, 54, 54, {
-  fill: 'red',
-  hachureAngle: 60, // angle of hachure,
-  hachureGap: 8
-}); // x, y, width, height
-svg.appendChild(node); */
+const createSoundSources = () => {
+  const sources = {
+    kick: new Tone.Player("./sounds/kick.wav").toDestination(),
+    snare: new Tone.Player("./sounds/snare.wav").toDestination(),
+    hihat: new Tone.Player("./sounds/hihat.wav").toDestination(),
+    rim: new Tone.Player("./sounds/rim.wav").toDestination(),
+    metronome: new Tone.Synth().toDestination(),
+  };
 
+  Object.values(sources).forEach(source => {
+    source.volume.value = -8;
+  });
+  
+  return {
+    play(soundName) {
+      sources[soundName]?.start();
+    },
 
+    getSource(soundName) {
+      return sources[soundName];
+    },
+
+    getAllSources() {
+      return [sources.kick, sources.snare, sources.hihat, sources.rim];
+    },
+  };
+  
+};
+
+const keyToDrum = {
+  z: "kick",
+  s: "snare",
+  h: "hihat",
+  d: "rim"
+};
+
+const soundManager = createSoundSources();
 
 
 const domElements = {
@@ -62,7 +114,7 @@ const domElements = {
   modalBtnContainer: document.getElementById("modalBtnContainer"),
   modalYes: document.getElementById("yesBtn"),
   modalNo: document.getElementById("noBtn"),
-  events: ['click', 'mousedown', 'mouseup', 'mousemove', 'keypress'],
+  events: ["click", "mousedown", "mouseup", "mousemove", "keypress"],
   handleKeyUp: (e) => {
     const key = e.key.toLowerCase();
     const drumIndex = keyToDrum[key];
@@ -73,30 +125,32 @@ const domElements = {
   },
   handleKeyDown: async (e) => {
     const key = e.key.toLowerCase();
-    const drumIndex = keyToDrum[key];
-    if (drumIndex === undefined) return;
+    const soundName = keyToDrum[key];
+    if (!soundName) return;
 
+    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
     const drumLabel = drumLabels[drumIndex];
     drumLabel.classList.add("pressed");
 
-    await Tone.start();
-    soundSources[drumIndex].start();
-  },
-  handleDrumLabelClick: (array) => {
-    array.forEach((label, index) => {
+    //await Tone.start();
+    soundManager.play(soundName);
+},
+handleDrumLabelClick: (array) => {
+  const soundNames = ["kick", "snare", "hihat", "rim"];
+  array.forEach((label, index) => {
       label.addEventListener("click", async (e) => {
-        e.preventDefault();
-        await Tone.start();
-        soundSources[index].start();
+          e.preventDefault();
+          //await Tone.start();
+          soundManager.play(soundNames[index]);
       });
-    });
-  },
+  });
+},
   openModal: () => {
     domElements.modal.open = true;
   },
   closeModal: () => {
     domElements.modal.open = false;
-  }
+  },
 };
 const drumLabels = [
   domElements.kickLabel,
@@ -126,30 +180,30 @@ const drumLogic = {
     lanes.forEach((lane) => this.createSubdivisionsForLane(lane));
   },
   handleGridEventListeners: (arr) => {
+    const soundNames = ["kick", "snare", "hihat", "rim"];
     arr.forEach((lane, index) => {
-      lane.addEventListener("mousedown", (e) => {
-        const target = e.target;
-        if (target.classList.contains("subdivision")) {
-          isDragging = true;
-          hasPlayedSound = false;
-          target.classList.toggle("active");
-            
-          console.log(e.type);
-          if (!hasPlayedSound && target.classList.contains("active")) {
-            soundSources[index].start();
-            hasPlayedSound = true;
-          }
-        }
-      });
+        lane.addEventListener("mousedown", (e) => {
+            const target = e.target;
+            if (target.classList.contains("subdivision")) {
+                sequencerState.updateDragging(true);
+                sequencerState.hasPlayedSound = false;
+                target.classList.toggle("active");
+                    
+                if (!sequencerState.hasPlayedSound && target.classList.contains("active")) {
+                    soundManager.play(soundNames[index]);
+                    sequencerState.hasPlayedSound = true;
+                }
+            }
+        });
     });
-  },
+},
   handleBeatCount: function () {
     new Tone.Loop((time) => {
-      const position = transport.position.split(":");
+      const position = sequencerState.transport.position.split(":");
       const bars = parseInt(position[0], 10);
       const beats = parseInt(position[1], 10);
 
-      beatCounter = (bars * 4 + beats) % totalSteps;
+      sequencerState.beatCounter = (bars * 4 + beats) % sequencerState.totalSteps;
       console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
       draw.schedule(() => {
         drumLogic.highlightStep();
@@ -162,8 +216,8 @@ const drumLogic = {
       item.classList.remove("playing");
     });
 
-    if (beatCounter < domElements.timeLineItems.length) {
-      domElements.timeLineItems[beatCounter].classList.add("playing");
+    if (sequencerState.beatCounter < domElements.timeLineItems.length) {
+      domElements.timeLineItems[sequencerState.beatCounter].classList.add("playing");
     }
   },
   setBeatBlock: function () {
@@ -173,28 +227,29 @@ const drumLogic = {
 
     domElements.timeLineItems[0].classList.add("playing");
 
-    beatCounter = 0;
+    sequencerState.beatCounter = 0;
   },
 
   addSoundsToGrid: function (arr) {
     let drumSequences = [];
+    const soundNames = ["kick", "snare", "hihat", "rim"];
+    
     arr.forEach((lane, index) => {
-      const soundSource = soundSources[index];
+        const soundName = soundNames[index];
+        const sequence = new Tone.Sequence(
+            (time, step) => {
+                const subdivision = lane.children[step];
+                if (subdivision.classList.contains("active")) {
+                    soundManager.getSource(soundName).start(time);
+                }
+            },
+            Array.from({ length: sequencerState.totalSteps }, (_, i) => i),
+            "16n"
+        ).start(0);
 
-      const sequence = new Tone.Sequence(
-        (time, step) => {
-          const subdivision = lane.children[step];
-          if (subdivision.classList.contains("active")) {
-            soundSource.start(time);
-          }
-        },
-        Array.from({ length: totalSteps }, (_, i) => i),
-        "16n"
-      ).start(0);
-
-      drumSequences.push(sequence);
+        drumSequences.push(sequence);
     });
-  },
+}
 };
 
 const transportItems = {
@@ -208,19 +263,19 @@ const transportItems = {
   clearButton: document.getElementById("clearButton"),
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
-    transport.start();
-    console.log(transport.position);
+    sequencerState.transport.start();
+    console.log(sequencerState.transport.position);
   },
   pauseSequence: () => {
-    transport.pause();
-    console.log(transport.position);
+    sequencerState.transport.pause();
+    console.log(sequencerState.transport.position);
   },
   stopSequence: function () {
-    transport.stop();
+    sequencerState.transport.stop();
     drumLogic.setBeatBlock();
-    transport.position = "0:0:0";
-    beatCounter = 0;
-    console.log(transport.position);
+    sequencerState.transport.position = "0:0:0";
+    sequencerState.beatCounter = 0;
+    console.log(sequencerState.transport.position);
   },
   clearPattern: () => {
     const drums = document.getElementById("drums");
@@ -231,8 +286,9 @@ const transportItems = {
   playMetronome: () => {
     if (!metronomeLoop) {
       metronomeLoop = new Tone.Loop((time) => {
+        const metronomeSource = soundManager.getSource('metronome');
         metronomeSource.volume.value = -13;
-        if (transport.position.includes("0:0")) {
+        if (sequencerState.transport.position.includes("0:0")) {
           metronomeSource.triggerAttackRelease("C5", "16n", time);
         } else {
           metronomeSource.triggerAttackRelease("C4", "16n", time);
@@ -245,10 +301,10 @@ const transportItems = {
   },
 
   toggleMetronome: () => {
-    isMetronomeOn = !isMetronomeOn;
-    transportItems.metronomeButton.classList.toggle("active", isMetronomeOn);
-
-    if (isMetronomeOn) {
+    sequencerState.isMetronomeOn = !sequencerState.isMetronomeOn;
+    //transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
+    setMetronomeState();
+    if (sequencerState.isMetronomeOn) {
       if (!metronomeLoop) {
         transportItems.playMetronome();
       } else {
@@ -316,10 +372,17 @@ transportItems.metronomeButton.addEventListener(
   transportItems.toggleMetronome.bind(transportItems)
 );
 
-transportItems.playButton.addEventListener(
-  "click",
-  transportItems.startSequence
-);
+let initialized = false; // Flag to check if Tone.js is initialized
+
+transportItems.playButton.addEventListener("click", async () => {
+  if (!initialized) {
+    await Tone.start();
+    soundManager.getAllSources(); // Preload all sound files
+    initialized = true;
+  }
+  transportItems.startSequence();
+});
+
 
 transportItems.pauseButton.addEventListener(
   "click",
@@ -330,12 +393,8 @@ transportItems.stopButton.addEventListener(
   transportItems.stopSequence
 );
 
-
-
 domElements.sequencerContainer.addEventListener("mousemove", (e) => {
-  console.log(e.type);
-
-  if (isDragging) {
+  if (sequencerState.isDragging) {
     const target = document.elementFromPoint(e.clientX, e.clientY);
     if (target && target.classList.contains("subdivision")) {
       target.classList.add("active");
@@ -346,8 +405,8 @@ domElements.sequencerContainer.addEventListener("mousemove", (e) => {
 domElements.sequencerContainer.addEventListener("mouseup", (e) => {
   console.log(e.type);
 
-  isDragging = false;
-  hasPlayedSound = false;
+  sequencerState.isDragging = false;
+  sequencerState.hasPlayedSound = false;
 });
 
 transportItems.clearButton.addEventListener("click", domElements.openModal);
@@ -361,7 +420,7 @@ domElements.modalBtnContainer.addEventListener("click", (e) => {
   } else {
     domElements.closeModal();
   }
-})
+});
 
 drumLabels.forEach((label) => {
   label.addEventListener("transitionend", (e) => {
@@ -379,16 +438,14 @@ transportItems.exportButton.addEventListener(
 );
 
 const updateBPM = (newBPM) => {
-  bpm = newBPM;
-  transport.bpm.value = bpm;
-  tempoSlider.value = bpm;
+  sequencerState.updateBPM(newBPM);
+  tempoSlider.value = newBPM;
   updateTempoDisplay();
 };
 
-
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
-    transport.bpm.value
+    sequencerState.transport.bpm.value
   )} BPM`;
 }
 
@@ -403,42 +460,44 @@ const stopAdjustingTempo = () => {
   clearInterval(intervalId);
 };
 
-
 transportItems.incrementTempoButton.addEventListener("mousedown", () => {
   startAdjustingTempo(() => {
-    transport.bpm.value += 1;
-    tempoSlider.value = Math.round(transport.bpm.value);
+    sequencerState.transport.bpm.value += 1;
+    tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
     updateTempoDisplay();
   });
 });
 
-transportItems.incrementTempoButton.addEventListener("mouseup", stopAdjustingTempo);
-transportItems.incrementTempoButton.addEventListener("mouseleave", stopAdjustingTempo);
+transportItems.incrementTempoButton.addEventListener(
+  "mouseup",
+  stopAdjustingTempo
+);
+transportItems.incrementTempoButton.addEventListener(
+  "mouseleave",
+  stopAdjustingTempo
+);
 
 transportItems.decrementTempoButton.addEventListener("mousedown", () => {
   startAdjustingTempo(() => {
-    if (transport.bpm.value > 1) {
-      transport.bpm.value -= 1;
-      tempoSlider.value = Math.round(transport.bpm.value);
+    if (sequencerState.transport.bpm.value > 1) {
+      sequencerState.transport.bpm.value -= 1;
+      tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
       updateTempoDisplay();
     }
   });
 });
 
-transportItems.decrementTempoButton.addEventListener("mouseup", stopAdjustingTempo);
-transportItems.decrementTempoButton.addEventListener("mouseleave", stopAdjustingTempo);
-
-
-
+transportItems.decrementTempoButton.addEventListener(
+  "mouseup",
+  stopAdjustingTempo
+);
+transportItems.decrementTempoButton.addEventListener(
+  "mouseleave",
+  stopAdjustingTempo
+);
 
 tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
 
 
-domElements.handleDrumLabelClick(drumLabels);
-drumLogic.renderGridSubdivisions();
-drumLogic.handleGridEventListeners(drumLanes);
-drumLogic.addSoundsToGrid(drumLanes);
-drumLogic.handleBeatCount();
-drumLogic.setBeatBlock();
