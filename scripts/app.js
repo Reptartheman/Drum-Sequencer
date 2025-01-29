@@ -1,7 +1,15 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
+import { setMetronomeState } from './roughCanvas';
 
-
+document.addEventListener("DOMContentLoaded", () => {
+  domElements.handleDrumLabelClick(drumLabels);
+drumLogic.renderGridSubdivisions();
+drumLogic.handleGridEventListeners(drumLanes);
+drumLogic.addSoundsToGrid(drumLanes);
+drumLogic.handleBeatCount();
+drumLogic.setBeatBlock();
+});
 
 
 
@@ -9,6 +17,9 @@ const midi = new Midi();
 const draw = Tone.getDraw();
 const tempoSlider = document.getElementById("tempoSlider");
 let metronomeLoop;
+
+
+
 
 const createSequencerState = () => {
   const state = {
@@ -121,7 +132,7 @@ const domElements = {
     const drumLabel = drumLabels[drumIndex];
     drumLabel.classList.add("pressed");
 
-    await Tone.start();
+    //await Tone.start();
     soundManager.play(soundName);
 },
 handleDrumLabelClick: (array) => {
@@ -129,7 +140,7 @@ handleDrumLabelClick: (array) => {
   array.forEach((label, index) => {
       label.addEventListener("click", async (e) => {
           e.preventDefault();
-          await Tone.start();
+          //await Tone.start();
           soundManager.play(soundNames[index]);
       });
   });
@@ -291,8 +302,8 @@ const transportItems = {
 
   toggleMetronome: () => {
     sequencerState.isMetronomeOn = !sequencerState.isMetronomeOn;
-    transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
-
+    //transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
+    setMetronomeState();
     if (sequencerState.isMetronomeOn) {
       if (!metronomeLoop) {
         transportItems.playMetronome();
@@ -361,10 +372,17 @@ transportItems.metronomeButton.addEventListener(
   transportItems.toggleMetronome.bind(transportItems)
 );
 
-transportItems.playButton.addEventListener(
-  "click",
-  transportItems.startSequence
-);
+let initialized = false; // Flag to check if Tone.js is initialized
+
+transportItems.playButton.addEventListener("click", async () => {
+  if (!initialized) {
+    await Tone.start();
+    soundManager.getAllSources(); // Preload all sound files
+    initialized = true;
+  }
+  transportItems.startSequence();
+});
+
 
 transportItems.pauseButton.addEventListener(
   "click",
@@ -482,9 +500,4 @@ tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
 
-domElements.handleDrumLabelClick(drumLabels);
-drumLogic.renderGridSubdivisions();
-drumLogic.handleGridEventListeners(drumLanes);
-drumLogic.addSoundsToGrid(drumLanes);
-drumLogic.handleBeatCount();
-drumLogic.setBeatBlock();
+

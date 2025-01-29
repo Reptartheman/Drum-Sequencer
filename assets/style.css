@@ -69,6 +69,7 @@ img {
   max-width: 100%;
 }
 
+
 .logo-container {
   height: 100%;
   display: flex;
@@ -140,13 +141,16 @@ span.tempo-display {
 
 /* Metronome button styling */
 
-.metronome-img {
+/* .metronome-container {
+} */
+
+.metronome-container {
+  width: 54px;
   height: 54px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .metronome-button {
   width: 100%;
   height: 100%;
@@ -155,12 +159,13 @@ span.tempo-display {
   cursor: pointer;
 }
 
-.metronome-button.active {
+/* .metronome-button.active {
   background-color: rgba(189, 85, 237, 0.444);
   box-shadow: 0 0 10px 5px rgba(189, 85, 237, 0.444);
-}
+} */
 
 .click {
+  
   font-family: var(--main-font);
   font-size: var(--size-18);
 }
