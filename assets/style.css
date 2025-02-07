@@ -51,6 +51,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
 }
 
 html {
@@ -112,7 +118,7 @@ img {
 /* TRANSPORT */
 
 .global-transport {
-  margin-bottom: var(--size-10);
+  margin-bottom: 0.5%;
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: repeat(3, auto);
@@ -154,7 +160,7 @@ span.tempo-display {
   background-image: url('./Click-notactiveR.svg');
   background-size: 100%;
   background-position: center;
-  padding: 0 var(--size-10);
+  padding: 0 var(--size-6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -313,14 +319,17 @@ p.beat-count {
   transition: 0.01s;
 }
 
-/* .drum-label-container:active {
-  transform: scale(0.03);
-} */
+.drum-label-container:active {
+  transition: background-color 0.1s;
+}
 
 
 
 .KICK-label  {
-  background-color: var(--kickBackGround);
+  background-image: url('./KICKlabelBG.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: var(--key-transition);
 }
 
@@ -330,7 +339,10 @@ p.beat-count {
   color: var(--main-backGround);
 }
 .SNARE-label {
-  background-color: var(--snareBackGround);
+  background-image: url('./SNARElabelBG.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: var(--key-transition);
 }
 
@@ -341,7 +353,10 @@ p.beat-count {
 }
 
 .RIM-label {
-  background-color: var(--rimBackGround);
+  background-image: url('./RimlabelBG.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: var(--key-transition);
 }
 
@@ -352,7 +367,10 @@ p.beat-count {
 }
 
 .HH-label {
-  background-color: var(--hiHatBackGround);
+  background-image: url('./HHlabelBG.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: var(--key-transition);
 }
 
@@ -360,10 +378,6 @@ p.beat-count {
   background-color: var(--hiHatBackGroundHover);
   box-shadow: 0 0 5px 5px var(--hiHatBackGround);;
   color: var(--main-backGround);
-}
-
-.pressed {
-  transform: scale(0.9);
 }
 
 
@@ -424,7 +438,10 @@ p.beat-count {
 }
 
 .timeline-item.playing {
-  background-color: var(--snareBackGroundNote);
+  background-image: url('./transportItemBG.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 
