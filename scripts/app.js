@@ -2,20 +2,15 @@ import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
 
 document.addEventListener("DOMContentLoaded", async () => {
-
-  let initialized = false;
-  if (!initialized) {
-    await Tone.start();
-    soundManager.getAllSources();
-    initialized = true;
-  }
+  keyboardHandler();
+  transportButtonHandler();
   domElements.handleDrumLabelClick(drumLabels);
   drumLogic.renderGridSubdivisions();
   drumLogic.handleGridEventListeners(drumLanes);
   drumLogic.addSoundsToGrid(drumLanes);
   drumLogic.handleBeatCount();
   drumLogic.setBeatBlock();
-  //transPortButtonHandler();
+  sequencerState.turnOnSequencer();
 });
 
 const midi = new Midi();
@@ -48,12 +43,52 @@ const createSequencerState = () => {
       this.beatCounter = count % this.totalSteps;
       return this;
     },
+   async turnOnSequencer() {
+      let initialized = false;
+    if (!initialized) {
+    await Tone.start();
+    soundManager.getAllSources();
+    initialized = true;
+  }
+    }
   };
   state.transport.loop = true;
   state.transport.loopStart = 0;
   state.transport.loopEnd = "2:0:0";
 
   return state;
+};
+
+
+const keyboardHandler = () => {
+  let pressedKeys = new Set();  // Track currently pressed keys
+
+  const handleKeyDown = (e) => {
+      const key = e.key.toLowerCase();
+      const soundName = keyToDrum[key];
+      if (!soundName || pressedKeys.has(key)) return;  // Prevent key repeat
+
+      pressedKeys.add(key);
+      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+      const drumLabel = drumLabels[drumIndex];
+      drumLabel.classList.add("pressed");
+      soundManager.play(soundName);
+  };
+
+  const handleKeyUp = (e) => {
+      const key = e.key.toLowerCase();
+      const soundName = keyToDrum[key];
+      if (!soundName) return;
+
+      pressedKeys.delete(key);
+      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+      const drumLabel = drumLabels[drumIndex];
+      
+      drumLabel.classList.remove("pressed");
+  };
+
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("keyup", handleKeyUp);
 };
 
 const sequencerState = createSequencerState();
@@ -115,25 +150,6 @@ const domElements = {
   modalYes: document.getElementById("yesBtn"),
   modalNo: document.getElementById("noBtn"),
   events: ["click", "mousedown", "mouseup", "mousemove", "keypress"],
-  handleKeyUp: (e) => {
-    const key = e.key.toLowerCase();
-    const drumIndex = keyToDrum[key];
-    if (drumIndex === undefined) return;
-
-    const drumLabel = drumLabels[drumIndex];
-    drumLabel.classList.remove("pressed");
-  },
-  handleKeyDown: (e) => {
-    const key = e.key.toLowerCase();
-    const soundName = keyToDrum[key];
-    if (!soundName) return;
-
-    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
-    const drumLabel = drumLabels[drumIndex];
-    drumLabel.classList.add("pressed");
-
-    soundManager.play(soundName);
-  },
   handleDrumLabelClick: (array) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
     array.forEach((label, index) => {
@@ -206,7 +222,6 @@ const drumLogic = {
 
       sequencerState.beatCounter =
         (bars * 4 + beats) % sequencerState.totalSteps;
-      console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
       draw.schedule(() => {
         drumLogic.highlightStep();
       }, time);
@@ -310,7 +325,6 @@ const transportItems = {
       "active",
       sequencerState.isMetronomeOn
     );
-    //setMetronomeState();
     if (sequencerState.isMetronomeOn) {
       if (!metronomeLoop) {
         transportItems.playMetronome();
@@ -374,39 +388,26 @@ const transportItems = {
   },
 };
 
-/* const transPortButtonHandler = (e) => {
-  const buttons = [
-    transportItems.playButton,
-    transportItems.pauseButton,
-    transportItems.stopButton,
-  ];
+const transportButtonHandler = () => {
+  const buttonConfig = {
+      'playBtn': transportItems.startSequence,
+      'pauseBtn': transportItems.pauseSequence,
+      'stopBtn': transportItems.stopSequence
+  };
 
-  buttons.forEach(button => {
-    if (e.target.id === 'playBtn') {
-      button.addEventListener('click', transportItems.startSequence);
-    }
-  })
-}; */
+  Object.entries(buttonConfig).forEach(([id, handler]) => {
+      const button = document.getElementById(id);
+      if (button) {
+          button.addEventListener('click', handler);
+      }
+  });
+};
 
 transportItems.metronomeButton.addEventListener(
   "click",
   transportItems.toggleMetronome.bind(transportItems)
 );
 
-
-transportItems.playButton.addEventListener("click", transportItems.startSequence);
-
-
-
-
-transportItems.pauseButton.addEventListener(
-  "click",
-  transportItems.pauseSequence
-);
-transportItems.stopButton.addEventListener(
-  "click",
-  transportItems.stopSequence
-);
 
 domElements.sequencerContainer.addEventListener("mousemove", (e) => {
   if (sequencerState.isDragging) {
@@ -431,21 +432,10 @@ domElements.modalBtnContainer.addEventListener("click", (e) => {
     setTimeout(() => {
       domElements.closeModal();
     }, 50);
-  } else {
-    domElements.closeModal();
-  }
+  };
 });
 
-drumLabels.forEach((label) => {
-  label.addEventListener("transitionend", (e) => {
-    if (e.propertyName === "transform") {
-      e.target.classList.remove("pressed");
-    }
-  });
-});
 
-document.addEventListener("keydown", domElements.handleKeyDown);
-document.addEventListener("keyup", domElements.handleKeyUp);
 transportItems.exportButton.addEventListener(
   "click",
   transportItems.exportMIDI.bind(transportItems)

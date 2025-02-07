@@ -27,16 +27,21 @@
 
     <section class="global-transport">
       <div class="tempo-container">
-        <wired-slider
-          id="tempoSlider"
-          type="range"
-          min="20"
-          max="260"
-          step="1"
-          class="slider"
-          value="120"
-        >
-        </wired-slider>
+        <!-- Replace your current SVG with this simpler version -->
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="28" viewBox="0 0 160 28" fill="none">
+  <!-- Track lines -->
+  <path d="M4.76 13C46.73 14.83 89.83 13.27 159.31 13.77M1 14.8C46.54 12.73 90.87 13.74 160 13.21" 
+        stroke="black" stroke-width="2.50384"/>
+  
+  <!-- Slider handle (simplified) -->
+  <path id="tempoSlider" d="M75 1 L75 27" 
+        stroke="#AD00FF" stroke-width="4"/>
+  
+  <!-- Frame -->
+  <path d="M75.91 26.64C75.42 18.41 75.16 10.05 75.99 3.21M75.42 25.82C75.7 18.65 75.56 10.88 75.46 2.6" 
+        stroke="black" stroke-width="1.25192"/>
+</svg>
+    
 
         <wired-button elevation="2" id="decrementTempo">-</wired-button>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
