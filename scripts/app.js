@@ -1,25 +1,27 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { setMetronomeState } from './roughCanvas';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+  let initialized = false;
+  if (!initialized) {
+    await Tone.start();
+    soundManager.getAllSources();
+    initialized = true;
+  }
   domElements.handleDrumLabelClick(drumLabels);
-drumLogic.renderGridSubdivisions();
-drumLogic.handleGridEventListeners(drumLanes);
-drumLogic.addSoundsToGrid(drumLanes);
-drumLogic.handleBeatCount();
-drumLogic.setBeatBlock();
+  drumLogic.renderGridSubdivisions();
+  drumLogic.handleGridEventListeners(drumLanes);
+  drumLogic.addSoundsToGrid(drumLanes);
+  drumLogic.handleBeatCount();
+  drumLogic.setBeatBlock();
+  //transPortButtonHandler();
 });
-
-
 
 const midi = new Midi();
 const draw = Tone.getDraw();
 const tempoSlider = document.getElementById("tempoSlider");
 let metronomeLoop;
-
-
-
 
 const createSequencerState = () => {
   const state = {
@@ -65,10 +67,10 @@ const createSoundSources = () => {
     metronome: new Tone.Synth().toDestination(),
   };
 
-  Object.values(sources).forEach(source => {
+  Object.values(sources).forEach((source) => {
     source.volume.value = -8;
   });
-  
+
   return {
     play(soundName) {
       sources[soundName]?.start();
@@ -82,18 +84,16 @@ const createSoundSources = () => {
       return [sources.kick, sources.snare, sources.hihat, sources.rim];
     },
   };
-  
 };
 
 const keyToDrum = {
   z: "kick",
   s: "snare",
   h: "hihat",
-  d: "rim"
+  d: "rim",
 };
 
 const soundManager = createSoundSources();
-
 
 const domElements = {
   drumLabelContainer: document.querySelectorAll(".drum-label-container"),
@@ -123,7 +123,7 @@ const domElements = {
     const drumLabel = drumLabels[drumIndex];
     drumLabel.classList.remove("pressed");
   },
-  handleKeyDown: async (e) => {
+  handleKeyDown: (e) => {
     const key = e.key.toLowerCase();
     const soundName = keyToDrum[key];
     if (!soundName) return;
@@ -132,19 +132,17 @@ const domElements = {
     const drumLabel = drumLabels[drumIndex];
     drumLabel.classList.add("pressed");
 
-    //await Tone.start();
     soundManager.play(soundName);
-},
-handleDrumLabelClick: (array) => {
-  const soundNames = ["kick", "snare", "hihat", "rim"];
-  array.forEach((label, index) => {
+  },
+  handleDrumLabelClick: (array) => {
+    const soundNames = ["kick", "snare", "hihat", "rim"];
+    array.forEach((label, index) => {
       label.addEventListener("click", async (e) => {
-          e.preventDefault();
-          //await Tone.start();
-          soundManager.play(soundNames[index]);
+        e.preventDefault();
+        soundManager.play(soundNames[index]);
       });
-  });
-},
+    });
+  },
   openModal: () => {
     domElements.modal.open = true;
   },
@@ -182,28 +180,32 @@ const drumLogic = {
   handleGridEventListeners: (arr) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
     arr.forEach((lane, index) => {
-        lane.addEventListener("mousedown", (e) => {
-            const target = e.target;
-            if (target.classList.contains("subdivision")) {
-                sequencerState.updateDragging(true);
-                sequencerState.hasPlayedSound = false;
-                target.classList.toggle("active");
-                    
-                if (!sequencerState.hasPlayedSound && target.classList.contains("active")) {
-                    soundManager.play(soundNames[index]);
-                    sequencerState.hasPlayedSound = true;
-                }
-            }
-        });
+      lane.addEventListener("mousedown", (e) => {
+        const target = e.target;
+        if (target.classList.contains("subdivision")) {
+          sequencerState.updateDragging(true);
+          sequencerState.hasPlayedSound = false;
+          target.classList.toggle("active");
+
+          if (
+            !sequencerState.hasPlayedSound &&
+            target.classList.contains("active")
+          ) {
+            soundManager.play(soundNames[index]);
+            sequencerState.hasPlayedSound = true;
+          }
+        }
+      });
     });
-},
+  },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
       const position = sequencerState.transport.position.split(":");
       const bars = parseInt(position[0], 10);
       const beats = parseInt(position[1], 10);
 
-      sequencerState.beatCounter = (bars * 4 + beats) % sequencerState.totalSteps;
+      sequencerState.beatCounter =
+        (bars * 4 + beats) % sequencerState.totalSteps;
       console.log(`Current Bar: ${bars}: Current Beat: ${beats}`);
       draw.schedule(() => {
         drumLogic.highlightStep();
@@ -217,7 +219,9 @@ const drumLogic = {
     });
 
     if (sequencerState.beatCounter < domElements.timeLineItems.length) {
-      domElements.timeLineItems[sequencerState.beatCounter].classList.add("playing");
+      domElements.timeLineItems[sequencerState.beatCounter].classList.add(
+        "playing"
+      );
     }
   },
   setBeatBlock: function () {
@@ -233,27 +237,27 @@ const drumLogic = {
   addSoundsToGrid: function (arr) {
     let drumSequences = [];
     const soundNames = ["kick", "snare", "hihat", "rim"];
-    
-    arr.forEach((lane, index) => {
-        const soundName = soundNames[index];
-        const sequence = new Tone.Sequence(
-            (time, step) => {
-                const subdivision = lane.children[step];
-                if (subdivision.classList.contains("active")) {
-                    soundManager.getSource(soundName).start(time);
-                }
-            },
-            Array.from({ length: sequencerState.totalSteps }, (_, i) => i),
-            "16n"
-        ).start(0);
 
-        drumSequences.push(sequence);
+    arr.forEach((lane, index) => {
+      const soundName = soundNames[index];
+      const sequence = new Tone.Sequence(
+        (time, step) => {
+          const subdivision = lane.children[step];
+          if (subdivision.classList.contains("active")) {
+            soundManager.getSource(soundName).start(time);
+          }
+        },
+        Array.from({ length: sequencerState.totalSteps }, (_, i) => i),
+        "16n"
+      ).start(0);
+
+      drumSequences.push(sequence);
     });
-}
+  },
 };
 
 const transportItems = {
-  metronomeButton: document.getElementById("metronomeButton"),
+  metronomeButton: document.querySelector(".metronome-container"),
   playButton: document.querySelector(".play-container img"),
   pauseButton: document.querySelector(".pause-container img"),
   stopButton: document.querySelector(".stop-container img"),
@@ -286,7 +290,7 @@ const transportItems = {
   playMetronome: () => {
     if (!metronomeLoop) {
       metronomeLoop = new Tone.Loop((time) => {
-        const metronomeSource = soundManager.getSource('metronome');
+        const metronomeSource = soundManager.getSource("metronome");
         metronomeSource.volume.value = -13;
         if (sequencerState.transport.position.includes("0:0")) {
           metronomeSource.triggerAttackRelease("C5", "16n", time);
@@ -302,8 +306,11 @@ const transportItems = {
 
   toggleMetronome: () => {
     sequencerState.isMetronomeOn = !sequencerState.isMetronomeOn;
-    //transportItems.metronomeButton.classList.toggle("active", sequencerState.isMetronomeOn);
-    setMetronomeState();
+    transportItems.metronomeButton.classList.toggle(
+      "active",
+      sequencerState.isMetronomeOn
+    );
+    //setMetronomeState();
     if (sequencerState.isMetronomeOn) {
       if (!metronomeLoop) {
         transportItems.playMetronome();
@@ -367,21 +374,29 @@ const transportItems = {
   },
 };
 
+/* const transPortButtonHandler = (e) => {
+  const buttons = [
+    transportItems.playButton,
+    transportItems.pauseButton,
+    transportItems.stopButton,
+  ];
+
+  buttons.forEach(button => {
+    if (e.target.id === 'playBtn') {
+      button.addEventListener('click', transportItems.startSequence);
+    }
+  })
+}; */
+
 transportItems.metronomeButton.addEventListener(
   "click",
   transportItems.toggleMetronome.bind(transportItems)
 );
 
-let initialized = false; // Flag to check if Tone.js is initialized
 
-transportItems.playButton.addEventListener("click", async () => {
-  if (!initialized) {
-    await Tone.start();
-    soundManager.getAllSources(); // Preload all sound files
-    initialized = true;
-  }
-  transportItems.startSequence();
-});
+transportItems.playButton.addEventListener("click", transportItems.startSequence);
+
+
 
 
 transportItems.pauseButton.addEventListener(
@@ -403,8 +418,7 @@ domElements.sequencerContainer.addEventListener("mousemove", (e) => {
 });
 
 domElements.sequencerContainer.addEventListener("mouseup", (e) => {
-  console.log(e.type);
-
+  e.preventDefault();
   sequencerState.isDragging = false;
   sequencerState.hasPlayedSound = false;
 });
@@ -499,5 +513,3 @@ transportItems.decrementTempoButton.addEventListener(
 tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
-
-
