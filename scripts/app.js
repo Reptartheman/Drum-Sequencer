@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
+import { renderTempoSlider as tempoSlider }  from './roughCanvas.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   keyboardHandler();
@@ -15,7 +16,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const midi = new Midi();
 const draw = Tone.getDraw();
-const tempoSlider = document.getElementById("tempoSlider");
 let metronomeLoop;
 
 const createSequencerState = () => {
@@ -432,7 +432,9 @@ domElements.modalBtnContainer.addEventListener("click", (e) => {
     setTimeout(() => {
       domElements.closeModal();
     }, 50);
-  };
+  } else {
+    domElements.closeModal();
+  }
 });
 
 
@@ -503,4 +505,4 @@ tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
 
-console.log(tempoSlider);
+
