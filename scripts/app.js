@@ -44,14 +44,14 @@ const createSequencerState = () => {
       this.beatCounter = count % this.totalSteps;
       return this;
     },
-   async turnOnSequencer() {
+    async turnOnSequencer() {
       let initialized = false;
-    if (!initialized) {
-    await Tone.start();
-    soundManager.getAllSources();
-    initialized = true;
-  }
-    }
+      if (!initialized) {
+        await Tone.start();
+        soundManager.getAllSources();
+        initialized = true;
+      }
+    },
   };
   state.transport.loop = true;
   state.transport.loopStart = 0;
@@ -60,32 +60,31 @@ const createSequencerState = () => {
   return state;
 };
 
-
 const keyboardHandler = () => {
-  let pressedKeys = new Set();  // Track currently pressed keys
+  let pressedKeys = new Set(); // Track currently pressed keys
 
   const handleKeyDown = (e) => {
-      const key = e.key.toLowerCase();
-      const soundName = keyToDrum[key];
-      if (!soundName || pressedKeys.has(key)) return;  // Prevent key repeat
+    const key = e.key.toLowerCase();
+    const soundName = keyToDrum[key];
+    if (!soundName || pressedKeys.has(key)) return; // Prevent key repeat
 
-      pressedKeys.add(key);
-      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
-      const drumLabel = drumLabels[drumIndex];
-      drumLabel.classList.add("pressed");
-      soundManager.play(soundName);
+    pressedKeys.add(key);
+    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+    const drumLabel = drumLabels[drumIndex];
+    drumLabel.classList.add("pressed");
+    soundManager.play(soundName);
   };
 
   const handleKeyUp = (e) => {
-      const key = e.key.toLowerCase();
-      const soundName = keyToDrum[key];
-      if (!soundName) return;
+    const key = e.key.toLowerCase();
+    const soundName = keyToDrum[key];
+    if (!soundName) return;
 
-      pressedKeys.delete(key);
-      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
-      const drumLabel = drumLabels[drumIndex];
-      
-      drumLabel.classList.remove("pressed");
+    pressedKeys.delete(key);
+    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+    const drumLabel = drumLabels[drumIndex];
+
+    drumLabel.classList.remove("pressed");
   };
 
   document.addEventListener("keydown", handleKeyDown);
@@ -214,6 +213,7 @@ const drumLogic = {
         }
       });
     });
+    console.log(`hey1`);
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
@@ -368,54 +368,54 @@ const transportItems = {
     const blob = new Blob([midiData], { type: "audio/midi" });
 
     try {
-        if (window.showSaveFilePicker) {
-            const options = {
-                suggestedName: "drum-sequence.mid",
-                types: [{
-                    description: "MIDI files",
-                    accept: { "audio/midi": [".mid"] }
-                }]
-            };
+      if (window.showSaveFilePicker) {
+        const options = {
+          suggestedName: "drum-sequence.mid",
+          types: [
+            {
+              description: "MIDI files",
+              accept: { "audio/midi": [".mid"] },
+            },
+          ],
+        };
 
-            const handle = await window.showSaveFilePicker(options);
-            const writable = await handle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-        }
-        else {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "drum-sequence.mid";
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }
+        const handle = await window.showSaveFilePicker(options);
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } else {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "drum-sequence.mid";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
 
-        console.log("File saved successfully!");
+      console.log("File saved successfully!");
     } catch (error) {
-        console.error("Error saving file:", error);
+      console.error("Error saving file:", error);
     }
-}
+  },
 };
 
 const handleClickEvents = () => {
   const buttonConfig = {
-      'playBtn': transportItems.startSequence,
-      'pauseBtn': transportItems.pauseSequence,
-      'stopBtn': transportItems.stopSequence,
-      'metronomeBtn': transportItems.toggleMetronome.bind(transportItems),
-      'clearButton': domElements.openModal,
-      "exportButton": transportItems.exportMIDI.bind(transportItems)
-
+    playBtn: transportItems.startSequence,
+    pauseBtn: transportItems.pauseSequence,
+    stopBtn: transportItems.stopSequence,
+    metronomeBtn: transportItems.toggleMetronome.bind(transportItems),
+    clearButton: domElements.openModal,
+    exportButton: transportItems.exportMIDI.bind(transportItems),
   };
 
   Object.entries(buttonConfig).forEach(([id, handler]) => {
-      const button = document.getElementById(id);
-      if (button) {
-          button.addEventListener('click', handler);
-      }
+    const button = document.getElementById(id);
+    if (button) {
+      button.addEventListener("click", handler);
+    }
   });
 };
 
@@ -430,8 +430,6 @@ domElements.modalBtnContainer.addEventListener("click", (e) => {
   }
 });
 
-
-
 domElements.sequencerContainer.addEventListener("mousemove", (e) => {
   if (sequencerState.isDragging) {
     const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -439,14 +437,15 @@ domElements.sequencerContainer.addEventListener("mousemove", (e) => {
       target.classList.add("active");
     }
   }
+  console.log(`hey2`);
 });
 
 domElements.sequencerContainer.addEventListener("mouseup", (e) => {
   e.preventDefault();
   sequencerState.isDragging = false;
   sequencerState.hasPlayedSound = false;
+  console.log(`hey3`);
 });
-
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
@@ -500,6 +499,3 @@ transportItems.decrementTempoButton.addEventListener(
   "mouseleave",
   stopAdjustingTempo
 );
-
-
-

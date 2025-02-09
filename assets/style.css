@@ -213,9 +213,22 @@ span.tempo-display {
   background-color: var(--kickBackGroundNote);
 }
 
+.edit-state-container {
+  display: flex;
+  width: 12vw;
+  gap: 2vw;
+}
+
+.edit-option-btn {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
+}
+
 .pattern-button-container {
   display: flex;
-  gap: var(--size-50);
+  gap: 2vw;
   transition: var(--key-transition);
 }
 
