@@ -22,7 +22,6 @@
   --main-font: "Architects Daughter", cursive;
   --key-transition: 0.1s;
 
-  
   --size-6: 0.375rem;
   --size-10: 0.625rem;
   --size-14: 0.875rem;
@@ -51,10 +50,10 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
 }
 
-html, body {
+html,
+body {
   width: 100vw;
   height: 100vh;
 }
@@ -85,7 +84,6 @@ img {
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
-
 
 .logo-container {
   height: 100%;
@@ -159,9 +157,6 @@ span.tempo-display {
   background-color: var(--beatTwo-backGround);
 }
 
-
-
-
 /* styles.css */
 
 /* Metronome button styling */
@@ -170,8 +165,8 @@ span.tempo-display {
 } */
 
 .metronome-container {
-  background-image: url('./Click-notactiveR.svg');
-  background-size: 100%;
+  background-image: url("./Click-notactiveR.svg");
+  background-size: 3vw 5.5vh;
   background-position: center;
   background-repeat: no-repeat;
   padding: 0 var(--size-6);
@@ -181,15 +176,13 @@ span.tempo-display {
   cursor: pointer;
 }
 
-
 .metronome-container.active {
-  background-image: url('./Click-activeR.svg');
+  background-image: url("./Click-activeR.svg");
 }
 
 .click {
   font-family: var(--main-font);
   font-size: var(--size-18);
-  
 }
 
 .transport-buttons {
@@ -220,27 +213,25 @@ span.tempo-display {
   background-color: var(--kickBackGroundNote);
 }
 
-
 .pattern-button-container {
   display: flex;
-  gap: var(--size-50); 
+  gap: var(--size-50);
   transition: var(--key-transition);
 }
 
 .option-button-container {
   display: flex;
-  width: 10vw;
+  width: 9vw;
 }
 
 img.pattern-option-button {
-
   cursor: pointer;
 }
 
-.pattern-option-button:hover, .modal-option-button:hover {
+.pattern-option-button:hover,
+.modal-option-button:hover {
   background-color: var(--beatTwo-backGround);
 }
-
 
 .modal-btn-container {
   display: flex;
@@ -260,24 +251,19 @@ img.pattern-option-button {
   text-align: center;
 }
 
-
 .measures-container {
   grid-column: 2 / span 36;
   display: flex;
   flex-direction: row;
-} 
-
+}
 
 .timeline-item {
   width: 100%;
 }
 
-
-
 .beat-container {
   border: 1px solid black;
 }
-
 
 p.beat-count {
   padding-left: 5%;
@@ -295,6 +281,7 @@ p.beat-count {
 }
 
 .drum-stack {
+  height: 85vh;
   grid-column: 1 / span 1;
   grid-row: 2 / span 16;
   display: flex;
@@ -314,7 +301,7 @@ p.beat-count {
   cursor: pointer;
   transition: 0.01s;
   background-position: center;
-  background-size: cover;
+  background-size: 3vw 21vh;
   background-repeat: no-repeat;
   transition: var(--key-transition);
 }
@@ -323,54 +310,52 @@ p.beat-count {
   transition: background-color 0.1s;
 }
 
-
-
-.KICK-label  {
-  background-image: url('./KICKlabelBG.svg');
-
+.KICK-label {
+  background-image: url("./KICKlabelBG.svg");
 }
 
-.KICK-label:hover, .KICK-label.pressed {
+.KICK-label:hover,
+.KICK-label.pressed {
   background-color: var(--kickBackGroundHover);
   box-shadow: 0 0 5px 5px var(--kickBackGround);
   color: var(--main-backGround);
 }
 .SNARE-label {
-  background-image: url('./SNARElabelBG.svg');
+  background-image: url("./SNARElabelBG.svg");
 }
 
 .SNARE-label p {
   font-size: var(--size-14);
 }
 
-.SNARE-label:hover, .SNARE-label.pressed {
+.SNARE-label:hover,
+.SNARE-label.pressed {
   background-color: var(--snareBackGroundHover);
   box-shadow: 0 0 5px 5px var(--snareBackGround);
   color: var(--main-backGround);
 }
 
 .RIM-label {
-  background-image: url('./RimlabelBG.svg');
-
+  background-image: url("./RimlabelBG.svg");
 }
 
-.RIM-label:hover, .RIM-label.pressed {
+.RIM-label:hover,
+.RIM-label.pressed {
   background-color: var(--rimBackGroundHover);
   box-shadow: 0 0 5px 5px var(--rimBackGround);
   color: var(--main-backGround);
 }
 
 .HH-label {
-  background-image: url('./HHlabelBG.svg');
-
+  background-image: url("./HHlabelBG.svg");
 }
 
-.HH-label:hover, .HH-label.pressed {
+.HH-label:hover,
+.HH-label.pressed {
   background-color: var(--hiHatBackGroundHover);
-  box-shadow: 0 0 5px 5px var(--hiHatBackGround);;
+  box-shadow: 0 0 5px 5px var(--hiHatBackGround);
   color: var(--main-backGround);
 }
-
 
 .beat-divider {
   border: 2px solid black;
@@ -382,14 +367,18 @@ p.beat-count {
 }
 
 .drum-grid {
-      display: grid;
-      grid-column: 2 / span 36;
-      grid-row: 2 / span 15;
-      border-bottom: 2px solid black;
-      cursor: url('../assets/pencil-lower-left\ 1.png'), auto;
+  display: grid;
+  grid-column: 2 / span 36;
+  grid-row: 2 / span 15;
+  border-bottom: 2px solid black;
+  cursor: url("../assets/pencil-lower-left\ 1.png"), auto;
 }
 
-.kick-lane, .snare-lane, .rim-lane, .hh-lane, .pitch-lane {
+.kick-lane,
+.snare-lane,
+.rim-lane,
+.hh-lane,
+.pitch-lane {
   display: grid;
   grid-template-columns: subgrid;
   grid-template-rows: subgrid;
@@ -411,7 +400,6 @@ p.beat-count {
   background-color: var(--snareBackGroundNote);
 }
 
-
 .rim-lane {
   grid-row: 2 / span 1;
 }
@@ -429,11 +417,8 @@ p.beat-count {
 }
 
 .timeline-item.playing {
-  background-image: url('./transportItemBG.svg');
+  background-image: url("./transportItemBG.svg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
-
-
-

@@ -1,10 +1,10 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { renderTempoSlider as tempoSlider }  from './roughCanvas.js';
-
+import { renderTempoSlider } from "./roughCanvas";
 document.addEventListener("DOMContentLoaded", async () => {
   keyboardHandler();
-  transportButtonHandler();
+  handleClickEvents();
+  renderTempoSlider();
   domElements.handleDrumLabelClick(drumLabels);
   drumLogic.renderGridSubdivisions();
   drumLogic.handleGridEventListeners(drumLanes);
@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const midi = new Midi();
 const draw = Tone.getDraw();
+const tempoSlider = document.getElementById("tempoSlider");
 let metronomeLoop;
 
 const createSequencerState = () => {
@@ -272,7 +273,7 @@ const drumLogic = {
 };
 
 const transportItems = {
-  metronomeButton: document.querySelector(".metronome-container"),
+  metronomeButton: document.getElementById("metronomeBtn"),
   playButton: document.querySelector(".play-container img"),
   pauseButton: document.querySelector(".pause-container img"),
   stopButton: document.querySelector(".stop-container img"),
@@ -364,35 +365,50 @@ const transportItems = {
   },
   handleFileNameChanger: async function () {
     const midiData = midi.toArray();
+    const blob = new Blob([midiData], { type: "audio/midi" });
 
     try {
-      const options = {
-        suggestedName: "drum-sequence.mid",
-        types: [
-          {
-            description: "MIDI files",
-            accept: { "audio/midi": [".mid"] },
-          },
-        ],
-      };
+        if (window.showSaveFilePicker) {
+            const options = {
+                suggestedName: "drum-sequence.mid",
+                types: [{
+                    description: "MIDI files",
+                    accept: { "audio/midi": [".mid"] }
+                }]
+            };
 
-      const handle = await window.showSaveFilePicker(options);
-      const writable = await handle.createWritable();
-      await writable.write(new Blob([midiData], { type: "audio/midi" }));
-      await writable.close();
+            const handle = await window.showSaveFilePicker(options);
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+        }
+        else {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "drum-sequence.mid";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
 
-      console.log("File saved successfully!");
+        console.log("File saved successfully!");
     } catch (error) {
-      console.error("Error saving file:", error);
+        console.error("Error saving file:", error);
     }
-  },
+}
 };
 
-const transportButtonHandler = () => {
+const handleClickEvents = () => {
   const buttonConfig = {
       'playBtn': transportItems.startSequence,
       'pauseBtn': transportItems.pauseSequence,
-      'stopBtn': transportItems.stopSequence
+      'stopBtn': transportItems.stopSequence,
+      'metronomeBtn': transportItems.toggleMetronome.bind(transportItems),
+      'clearButton': domElements.openModal,
+      "exportButton": transportItems.exportMIDI.bind(transportItems)
+
   };
 
   Object.entries(buttonConfig).forEach(([id, handler]) => {
@@ -403,10 +419,17 @@ const transportButtonHandler = () => {
   });
 };
 
-transportItems.metronomeButton.addEventListener(
-  "click",
-  transportItems.toggleMetronome.bind(transportItems)
-);
+domElements.modalBtnContainer.addEventListener("click", (e) => {
+  if (e.target.id === "yesBtn") {
+    transportItems.clearPattern();
+    setTimeout(() => {
+      domElements.closeModal();
+    }, 50);
+  } else {
+    domElements.closeModal();
+  }
+});
+
 
 
 domElements.sequencerContainer.addEventListener("mousemove", (e) => {
@@ -424,29 +447,6 @@ domElements.sequencerContainer.addEventListener("mouseup", (e) => {
   sequencerState.hasPlayedSound = false;
 });
 
-transportItems.clearButton.addEventListener("click", domElements.openModal);
-
-domElements.modalBtnContainer.addEventListener("click", (e) => {
-  if (e.target.id === "yesBtn") {
-    transportItems.clearPattern();
-    setTimeout(() => {
-      domElements.closeModal();
-    }, 50);
-  } else {
-    domElements.closeModal();
-  }
-});
-
-
-transportItems.exportButton.addEventListener(
-  "click",
-  transportItems.exportMIDI.bind(transportItems)
-);
-
-const updateBPM = (newBPM) => {
-  sequencerState.updateBPM(newBPM);
-  updateTempoDisplay();
-};
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
@@ -501,8 +501,5 @@ transportItems.decrementTempoButton.addEventListener(
   stopAdjustingTempo
 );
 
-tempoSlider.addEventListener("change", (e) => {
-  updateBPM(parseInt(e.target.value));
-});
 
 
