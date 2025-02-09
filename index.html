@@ -21,42 +21,40 @@
   <body>
     <header class="header">
       <div class="logo-container">
-        <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy"/>
+        <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy" />
       </div>
     </header>
 
     <section class="global-transport">
       <div class="tempo-container">
-        <!-- Replace your current SVG with this simpler version -->
-<svg xmlns="http://www.w3.org/2000/svg" width="160" height="28" viewBox="0 0 160 28" fill="none">
-  <!-- Track lines -->
-  <path d="M4.76 13C46.73 14.83 89.83 13.27 159.31 13.77M1 14.8C46.54 12.73 90.87 13.74 160 13.21" 
-        stroke="black" stroke-width="2.50384"/>
-  
-  <!-- Slider handle (simplified) -->
-  <path id="tempoSlider" d="M75 1 L75 27" 
-        stroke="#AD00FF" stroke-width="4"/>
-  
-  <!-- Frame -->
-  <path d="M75.91 26.64C75.42 18.41 75.16 10.05 75.99 3.21M75.42 25.82C75.7 18.65 75.56 10.88 75.46 2.6" 
-        stroke="black" stroke-width="1.25192"/>
-</svg>
-    
+        <svg
+          class="tempo-slider-container"
+          id="tempoSlider"
+          xmlns="http://www.w3.org/2000/svg"
+          width="200"
+          height="40"
+          viewBox="0 0 160 28"
+          fill="none"
+        ></svg>
 
-        <wired-button elevation="2" id="decrementTempo">-</wired-button>
+        <div class="tempo-btn" elevation="2" id="decrementTempo">
+          <img src="./assets/DOWNTEMPO.svg" alt="tempo slower">
+        </div>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
-        <wired-button elevation="2" id="incrementTempo">+</wired-button>
+        <div class="tempo-btn" elevation="2" id="incrementTempo">
+          <img src="./assets/UPTEMPO.svg" alt="tempo faster">
+        </div>
       </div>
 
       <div class="transport-buttons">
         <div id="stopBtn" class="transport-btn stop-container">
-          <img src="./assets/Stop.svg" alt="stop button" loading="lazy"/>
+          <img src="./assets/Stop.svg" alt="stop button" loading="lazy" />
         </div>
         <div id="pauseBtn" class="transport-btn pause-container">
-          <img src="./assets/Pause.svg" alt="pause button" loading="lazy"/>
+          <img src="./assets/Pause.svg" alt="pause button" loading="lazy" />
         </div>
         <div id="playBtn" class="transport-btn play-container">
-          <img src="./assets/GlobalPlay.svg" alt="play button" loading="lazy"/>
+          <img src="./assets/GlobalPlay.svg" alt="play button" loading="lazy" />
         </div>
         <!-- <div class="transport-btn cycle-container">
           <img src="./assets/GlobalRecord.svg" alt="cycle button" />
@@ -64,12 +62,20 @@
       </div>
 
       <div class="pattern-button-container">
-        <wired-button class="pattern-option-button" id="clearButton">
-          Clear Sketch
-        </wired-button>
-        <wired-button class="pattern-option-button" id="exportButton">
-          Export Sketch
-        </wired-button>
+        <div class="option-button-container">
+          <img
+            src="./assets/CLEAR.svg"
+            class="pattern-option-button"
+            id="clearButton"
+          />
+        </div>
+        <div class="option-button-container">
+          <img
+            src="./assets/EXPORT.svg"
+            class="pattern-option-button"
+            id="exportButton"
+          />
+        </div>
       </div>
     </section>
 
