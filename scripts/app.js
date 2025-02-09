@@ -443,7 +443,6 @@ transportItems.exportButton.addEventListener(
 
 const updateBPM = (newBPM) => {
   sequencerState.updateBPM(newBPM);
-  tempoSlider.value = newBPM;
   updateTempoDisplay();
 };
 
@@ -503,3 +502,5 @@ transportItems.decrementTempoButton.addEventListener(
 tempoSlider.addEventListener("change", (e) => {
   updateBPM(parseInt(e.target.value));
 });
+
+console.log(tempoSlider);

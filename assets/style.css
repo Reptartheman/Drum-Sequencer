@@ -111,7 +111,7 @@ img {
 /* HEADER */
 
 .header {
-  height: 44px;
+  height: 4vh;
   position: relative;
 }
 
@@ -119,14 +119,12 @@ img {
 
 .global-transport {
   margin-bottom: 0.5%;
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: repeat(3, auto);
+  display: flex;
+  justify-content: space-around;
   align-items: center;
   justify-items: center;
-
-  gap: 0px;
-  height: 50px;
+  height: 4.5vh;
+  gap: var(--size-40);
 }
 
 .tempo-container {
@@ -139,12 +137,26 @@ img {
   gap: var(--size-24);
 }
 
-span.tempo-display {
-  min-width: 80px;
-    text-align: center;
-  font-size: var(--size-20);
+.tempo-slider-container {
+  cursor: pointer;
 }
 
+span.tempo-display {
+  min-width: 80px;
+  text-align: center;
+  font-size: clamp(var(--size-10), var(--size-20), var(--size-24));
+}
+
+.tempo-btn {
+  display: flex;
+  justify-content: center;
+  width: 2vw;
+  transition: var(--key-transition);
+}
+
+.tempo-btn:hover {
+  background-color: var(--beatTwo-backGround);
+}
 
 
 
@@ -160,6 +172,7 @@ span.tempo-display {
   background-image: url('./Click-notactiveR.svg');
   background-size: 100%;
   background-position: center;
+  background-repeat: no-repeat;
   padding: 0 var(--size-6);
   display: flex;
   justify-content: center;
@@ -206,13 +219,20 @@ span.tempo-display {
   background-color: var(--kickBackGroundNote);
 }
 
+
 .pattern-button-container {
-  grid-column: 4 / span 1;
   display: flex;
   gap: var(--size-50); 
+  transition: var(--key-transition);
 }
 
-.pattern-option-button {
+.option-button-container {
+  display: flex;
+  width: 10vw;
+}
+
+img.pattern-option-button {
+
   cursor: pointer;
 }
 
@@ -257,41 +277,16 @@ span.tempo-display {
   border: 1px solid black;
 }
 
-.beat-container:nth-child(1) {
-  grid-column: 1 / span 4;
-}
-
-.beat-container:nth-child(2) {
-  grid-column: 5 / span 4;
-}
-.beat-container:nth-child(3) {
-  grid-column: 9 / span 4;
-}
-.beat-container:nth-child(4) {
-  grid-column: 13 / span 4;
-}
-.beat-container:nth-child(5) {
-  grid-column: 17 / span 4;
-}
-.beat-container:nth-child(6) {
-  grid-column: 21 / span 4;
-}
-.beat-container:nth-child(7) {
-  grid-column: 25 / span 4;
-}
-.beat-container:nth-child(8) {
-  grid-column: 29 / span 4;
-}
-.beat-container:nth-child(9) {
-  grid-column: 33 / span 4;
-}
 
 p.beat-count {
-  padding-left: var(--size-10);
-  font-size: var(--size-20);
+  padding-left: 5%;
+  font-size: clamp(var(--size-10), var(--size-20), var(--size-24));
 }
 
 .sequencer-container {
+  margin-right: 0.5%;
+  margin-left: 0.2%;
+  border-right: var(--beat-border);
   display: grid;
   grid-template-columns: repeat(36, 1fr);
   grid-template-rows: repeat(16, 1fr);
@@ -311,12 +306,15 @@ p.beat-count {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: var(--beat-border);
   width: 100%;
   height: 100%;
   user-select: none;
   cursor: pointer;
   transition: 0.01s;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: var(--key-transition);
 }
 
 .drum-label-container:active {
@@ -327,10 +325,7 @@ p.beat-count {
 
 .KICK-label  {
   background-image: url('./KICKlabelBG.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  transition: var(--key-transition);
+
 }
 
 .KICK-label:hover, .KICK-label.pressed {
@@ -340,10 +335,10 @@ p.beat-count {
 }
 .SNARE-label {
   background-image: url('./SNARElabelBG.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  transition: var(--key-transition);
+}
+
+.SNARE-label p {
+  font-size: var(--size-14);
 }
 
 .SNARE-label:hover, .SNARE-label.pressed {
@@ -354,10 +349,7 @@ p.beat-count {
 
 .RIM-label {
   background-image: url('./RimlabelBG.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  transition: var(--key-transition);
+
 }
 
 .RIM-label:hover, .RIM-label.pressed {
@@ -368,10 +360,7 @@ p.beat-count {
 
 .HH-label {
   background-image: url('./HHlabelBG.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  transition: var(--key-transition);
+
 }
 
 .HH-label:hover, .HH-label.pressed {
