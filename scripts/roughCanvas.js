@@ -1,6 +1,7 @@
-// In roughCanvas.js
 import rough from "roughjs";
+import * as Tone from "tone";
 
+const transport = Tone.getTransport();
 const renderTempoSlider = () => {
   const sliderSvg = document.getElementById("tempoSlider");
   const rc = rough.svg(sliderSvg);
@@ -20,8 +21,40 @@ const renderTempoSlider = () => {
   sliderSvg.appendChild(tempoSliderLine);
   sliderKnob.id = "sliderKnob";
   sliderSvg.appendChild(sliderKnob);
-};
 
-renderTempoSlider();
+  let isDragging = false;
+  const knobWidth = 10;
+  const minX = 10;
+  const maxX = 150 - knobWidth;
+
+  const updateSliderPosition = (x) => {
+    const boundedX = Math.max(minX, Math.min(maxX, x - knobWidth/2));
+    const percentage = (boundedX - minX) / (maxX - minX);
+    const bpm = Math.round(20 + (260 - 20) * percentage);
+    
+    sliderKnob.style.transform = `translateX(${boundedX - 75}px)`;
+    
+    document.getElementById("tempoDisplay").textContent = `${bpm} BPM`;
+    transport.bpm.value = bpm;
+  };
+
+  sliderSvg.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    const rect = sliderSvg.getBoundingClientRect();
+    const rectDrag = rect.x + 1
+    updateSliderPosition(e.clientX - rectDrag);
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const rect = sliderSvg.getBoundingClientRect();
+    const rectDrag = rect.x + 1
+    updateSliderPosition(e.clientX - rectDrag);
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+};
 
 export { renderTempoSlider };

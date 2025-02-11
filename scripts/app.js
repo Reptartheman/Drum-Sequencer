@@ -1,10 +1,10 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { renderTempoSlider as tempoSlider }  from './roughCanvas.js';
-
+import { renderTempoSlider } from "./roughCanvas";
 document.addEventListener("DOMContentLoaded", async () => {
-  keyboardHandler();
-  transportButtonHandler();
+  drumKeysHandler();
+  handleClickEvents();
+  renderTempoSlider();
   domElements.handleDrumLabelClick(drumLabels);
   drumLogic.renderGridSubdivisions();
   drumLogic.handleGridEventListeners(drumLanes);
@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const midi = new Midi();
 const draw = Tone.getDraw();
+const tempoSlider = renderTempoSlider();
 let metronomeLoop;
 
 const createSequencerState = () => {
@@ -43,14 +44,14 @@ const createSequencerState = () => {
       this.beatCounter = count % this.totalSteps;
       return this;
     },
-   async turnOnSequencer() {
+    async turnOnSequencer() {
       let initialized = false;
-    if (!initialized) {
-    await Tone.start();
-    soundManager.getAllSources();
-    initialized = true;
-  }
-    }
+      if (!initialized) {
+        await Tone.start();
+        soundManager.getAllSources();
+        initialized = true;
+      }
+    },
   };
   state.transport.loop = true;
   state.transport.loopStart = 0;
@@ -59,32 +60,31 @@ const createSequencerState = () => {
   return state;
 };
 
-
-const keyboardHandler = () => {
-  let pressedKeys = new Set();  // Track currently pressed keys
+const drumKeysHandler = () => {
+  let pressedKeys = new Set();
 
   const handleKeyDown = (e) => {
-      const key = e.key.toLowerCase();
-      const soundName = keyToDrum[key];
-      if (!soundName || pressedKeys.has(key)) return;  // Prevent key repeat
+    const key = e.key.toLowerCase();
+    const soundName = keyToDrum[key];
+    if (!soundName || pressedKeys.has(key)) return;
 
-      pressedKeys.add(key);
-      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
-      const drumLabel = drumLabels[drumIndex];
-      drumLabel.classList.add("pressed");
-      soundManager.play(soundName);
+    pressedKeys.add(key);
+    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+    const drumLabel = drumLabels[drumIndex];
+    drumLabel.classList.add("pressed");
+    soundManager.play(soundName);
   };
 
   const handleKeyUp = (e) => {
-      const key = e.key.toLowerCase();
-      const soundName = keyToDrum[key];
-      if (!soundName) return;
+    const key = e.key.toLowerCase();
+    const soundName = keyToDrum[key];
+    if (!soundName) return;
 
-      pressedKeys.delete(key);
-      const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
-      const drumLabel = drumLabels[drumIndex];
-      
-      drumLabel.classList.remove("pressed");
+    pressedKeys.delete(key);
+    const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
+    const drumLabel = drumLabels[drumIndex];
+
+    drumLabel.classList.remove("pressed");
   };
 
   document.addEventListener("keydown", handleKeyDown);
@@ -125,7 +125,7 @@ const keyToDrum = {
   z: "kick",
   s: "snare",
   h: "hihat",
-  d: "rim",
+  r: "rim",
 };
 
 const soundManager = createSoundSources();
@@ -149,6 +149,9 @@ const domElements = {
   modalBtnContainer: document.getElementById("modalBtnContainer"),
   modalYes: document.getElementById("yesBtn"),
   modalNo: document.getElementById("noBtn"),
+  drawBtn: document.getElementById("drawBtn"),
+  eraseBtn: document.getElementById("eraseBtn"),
+  editStateContainer: document.querySelector(".edit-state-container"),
   events: ["click", "mousedown", "mouseup", "mousemove", "keypress"],
   handleDrumLabelClick: (array) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
@@ -195,22 +198,40 @@ const drumLogic = {
   },
   handleGridEventListeners: (arr) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
+
+    const handleActiveClass = (target) => {
+      if (
+        target.classList.contains("active") &&
+        domElements.sequencerContainer.classList.contains("eraser")
+      ) {
+        toggleState.removeClass(target, "active");
+      }
+    };
+
+    const handleSubdivisionClass = (target, index) => {
+      if (
+        target.classList.contains("subdivision") &&
+        domElements.sequencerContainer.classList.contains("pencil")
+      ) {
+        sequencerState.hasPlayedSound = false;
+        toggleState.addClass(target, "active");
+
+        if (
+          !sequencerState.hasPlayedSound &&
+          target.classList.contains("active")
+        ) {
+          soundManager.play(soundNames[index]);
+          sequencerState.hasPlayedSound = true;
+        }
+      }
+    };
+
     arr.forEach((lane, index) => {
       lane.addEventListener("mousedown", (e) => {
         const target = e.target;
-        if (target.classList.contains("subdivision")) {
-          sequencerState.updateDragging(true);
-          sequencerState.hasPlayedSound = false;
-          target.classList.toggle("active");
-
-          if (
-            !sequencerState.hasPlayedSound &&
-            target.classList.contains("active")
-          ) {
-            soundManager.play(soundNames[index]);
-            sequencerState.hasPlayedSound = true;
-          }
-        }
+        sequencerState.updateDragging(true);
+        handleActiveClass(target);
+        handleSubdivisionClass(target, index);
       });
     });
   },
@@ -272,7 +293,7 @@ const drumLogic = {
 };
 
 const transportItems = {
-  metronomeButton: document.querySelector(".metronome-container"),
+  metronomeButton: document.getElementById("metronomeBtn"),
   playButton: document.querySelector(".play-container img"),
   pauseButton: document.querySelector(".pause-container img"),
   stopButton: document.querySelector(".stop-container img"),
@@ -364,22 +385,34 @@ const transportItems = {
   },
   handleFileNameChanger: async function () {
     const midiData = midi.toArray();
+    const blob = new Blob([midiData], { type: "audio/midi" });
 
     try {
-      const options = {
-        suggestedName: "drum-sequence.mid",
-        types: [
-          {
-            description: "MIDI files",
-            accept: { "audio/midi": [".mid"] },
-          },
-        ],
-      };
+      if (window.showSaveFilePicker) {
+        const options = {
+          suggestedName: "drum-sequence.mid",
+          types: [
+            {
+              description: "MIDI files",
+              accept: { "audio/midi": [".mid"] },
+            },
+          ],
+        };
 
-      const handle = await window.showSaveFilePicker(options);
-      const writable = await handle.createWritable();
-      await writable.write(new Blob([midiData], { type: "audio/midi" }));
-      await writable.close();
+        const handle = await window.showSaveFilePicker(options);
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } else {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "drum-sequence.mid";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
 
       console.log("File saved successfully!");
     } catch (error) {
@@ -388,65 +421,142 @@ const transportItems = {
   },
 };
 
-const transportButtonHandler = () => {
+const editModeHandler = () => {
+  const elements = {
+    currentMode: null,
+    drawButton: domElements.drawBtn,
+    eraseBtn: domElements.eraseBtn,
+
+    addClass(element, className) {
+      if (!element.classList.contains(className))
+        element.classList.add(className);
+    },
+
+    removeClass(element, className) {
+      if (element.classList.contains(className))
+        element.classList.remove(className);
+    },
+
+    handleModeToggle(mode) {
+      if (mode === "draw") {
+        this.addClass(domElements.drawBtn, "on");
+        this.removeClass(domElements.eraseBtn, "on");
+        this.addClass(domElements.sequencerContainer, "pencil");
+        this.removeClass(domElements.sequencerContainer, "eraser");
+      } else if (mode === "erase") {
+        this.addClass(domElements.eraseBtn, "on");
+        this.removeClass(domElements.drawBtn, "on");
+        this.addClass(domElements.sequencerContainer, "eraser");
+        this.removeClass(domElements.sequencerContainer, "pencil");
+      }
+    },
+
+    handleEditStateClick(e) {
+      const target = e.target;
+      if (target.id === "drawBtn") {
+        this.handleModeToggle("draw");
+      } else if (target.id === "eraseBtn") {
+        this.handleModeToggle("erase");
+      }
+    },
+
+    handleKeyDown(e) {
+      const key = e.key.toLowerCase();
+      if (key === "d") {
+        this.handleModeToggle("draw");
+      } else if (key === "e") {
+        this.handleModeToggle("erase");
+      }
+    },
+
+    handleMouseDown(e) {
+      if (e.shiftKey) {
+        sequencerState.isDragging = true;
+        const target = e.target;
+        if (domElements.sequencerContainer.classList.contains("pencil")) {
+          this.currentMode = "draw";
+          toggleState.addClass(target, "active");
+        } else if (
+          domElements.sequencerContainer.classList.contains("eraser")
+        ) {
+          this.currentMode = "erase";
+          toggleState.removeClass(target, "active");
+        }
+      }
+    },
+
+    handleMouseMove(e) {
+      if (sequencerState.isDragging && e.shiftKey) {
+        const target = e.target;
+        if (this.currentMode === "draw") {
+          toggleState.addClass(target, "active");
+        } else if (this.currentMode === "erase") {
+          toggleState.removeClass(target, "active");
+        }
+      }
+    },
+
+    handleModalClick(e) {
+      if (e.target.id === "yesBtn") {
+        transportItems.clearPattern();
+        setTimeout(() => {
+          domElements.closeModal();
+        }, 50);
+      } else {
+        domElements.closeModal();
+      }
+    },
+  };
+
+  return elements;
+};
+
+const toggleState = editModeHandler();
+
+const handleClickEvents = () => {
   const buttonConfig = {
-      'playBtn': transportItems.startSequence,
-      'pauseBtn': transportItems.pauseSequence,
-      'stopBtn': transportItems.stopSequence
+    playBtn: transportItems.startSequence,
+    pauseBtn: transportItems.pauseSequence,
+    stopBtn: transportItems.stopSequence,
+    metronomeBtn: transportItems.toggleMetronome.bind(transportItems),
+    clearButton: domElements.openModal,
+    exportButton: transportItems.exportMIDI.bind(transportItems),
   };
 
   Object.entries(buttonConfig).forEach(([id, handler]) => {
-      const button = document.getElementById(id);
-      if (button) {
-          button.addEventListener('click', handler);
-      }
+    const button = document.getElementById(id);
+    if (button) {
+      button.addEventListener("click", handler);
+    }
   });
 };
 
-transportItems.metronomeButton.addEventListener(
-  "click",
-  transportItems.toggleMetronome.bind(transportItems)
-);
-
-
-domElements.sequencerContainer.addEventListener("mousemove", (e) => {
-  if (sequencerState.isDragging) {
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    if (target && target.classList.contains("subdivision")) {
-      target.classList.add("active");
-    }
-  }
+domElements.editStateContainer.addEventListener("click", (e) => {
+  toggleState.handleEditStateClick(e);
 });
 
-domElements.sequencerContainer.addEventListener("mouseup", (e) => {
-  e.preventDefault();
-  sequencerState.isDragging = false;
-  sequencerState.hasPlayedSound = false;
+document.addEventListener("keydown", (e) => {
+  toggleState.handleKeyDown(e);
 });
-
-transportItems.clearButton.addEventListener("click", domElements.openModal);
 
 domElements.modalBtnContainer.addEventListener("click", (e) => {
-  if (e.target.id === "yesBtn") {
-    transportItems.clearPattern();
-    setTimeout(() => {
-      domElements.closeModal();
-    }, 50);
-  } else {
-    domElements.closeModal();
-  }
+  toggleState.handleModalClick(e);
 });
 
-
-transportItems.exportButton.addEventListener(
-  "click",
-  transportItems.exportMIDI.bind(transportItems)
-);
-
-const updateBPM = (newBPM) => {
-  sequencerState.updateBPM(newBPM);
-  updateTempoDisplay();
+const handleMouseUp = () => {
+  sequencerState.isDragging = false;
+  toggleState.currentMode = null;
 };
+
+domElements.sequencerContainer.addEventListener(
+  "mousedown",
+  toggleState.handleMouseDown
+);
+domElements.sequencerContainer.addEventListener(
+  "mousemove",
+  toggleState.handleMouseMove
+);
+document.addEventListener("mouseup", handleMouseUp);
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
@@ -500,9 +610,3 @@ transportItems.decrementTempoButton.addEventListener(
   "mouseleave",
   stopAdjustingTempo
 );
-
-tempoSlider.addEventListener("change", (e) => {
-  updateBPM(parseInt(e.target.value));
-});
-
-

@@ -18,7 +18,7 @@
     <script defer type="module" src="./scripts/roughCanvas.js"></script>
     <script defer type="module" src="./scripts/app.js"></script>
   </head>
-  <body>
+  <body class="no-select">
     <header class="header">
       <div class="logo-container">
         <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy" />
@@ -61,6 +61,15 @@
         </div> -->
       </div>
 
+      <div id="editStateContainer" class="edit-state-container">
+        <div class="edit-option-btn">
+          <img id="drawBtn" class="draw on" src="./assets/DRAW-inactive.svg" alt="enable draw">
+        </div>
+        <div  class="edit-option-btn">
+          <img id="eraseBtn" class="erase" src="./assets/ERASE-inactive.svg" alt="enable draw">
+        </div>
+      </div>
+
       <div class="pattern-button-container">
         <div class="option-button-container">
           <img
@@ -90,7 +99,7 @@
     </wired-dialog>
 
     <div class="sequencer-container no-select">
-      <div class="metronome-container">
+      <div id="metronomeBtn" class="metronome-container">
         <p class="click">Click</p>
       </div>
       <div class="drum-stack">
@@ -100,7 +109,7 @@
         </div>
         <div id="rimLabel" class="drum-label-container RIM-label">
           <p id="rim" class="drum-label">RIM</p>
-          <kbd>(D)</kbd>
+          <kbd>(R)</kbd>
         </div>
         <div id="snareLabel" class="drum-label-container SNARE-label">
           <p id="snare" class="drum-label">SNARE</p>
@@ -138,7 +147,7 @@
         </div>
       </section>
 
-      <div id="drums" class="drum-track drum-grid">
+      <div id="drums" class="drum-track drum-grid pencil">
         <div id="hiHatLane" class="drum-lane hh-lane"></div>
         <div id="rimLane" class="drum-lane rim-lane"></div>
         <div id="snareLane" class="drum-lane snare-lane"></div>
