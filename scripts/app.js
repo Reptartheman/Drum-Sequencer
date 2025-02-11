@@ -2,7 +2,7 @@ import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
 import { renderTempoSlider } from "./roughCanvas";
 document.addEventListener("DOMContentLoaded", async () => {
-  keyboardHandler();
+  drumKeysHandler();
   handleClickEvents();
   renderTempoSlider();
   domElements.handleDrumLabelClick(drumLabels);
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const midi = new Midi();
 const draw = Tone.getDraw();
-const tempoSlider = document.getElementById("tempoSlider");
+const tempoSlider = renderTempoSlider();
 let metronomeLoop;
 
 const createSequencerState = () => {
@@ -60,13 +60,13 @@ const createSequencerState = () => {
   return state;
 };
 
-const keyboardHandler = () => {
-  let pressedKeys = new Set(); // Track currently pressed keys
+const drumKeysHandler = () => {
+  let pressedKeys = new Set();
 
   const handleKeyDown = (e) => {
     const key = e.key.toLowerCase();
     const soundName = keyToDrum[key];
-    if (!soundName || pressedKeys.has(key)) return; // Prevent key repeat
+    if (!soundName || pressedKeys.has(key)) return;
 
     pressedKeys.add(key);
     const drumIndex = ["kick", "snare", "hihat", "rim"].indexOf(soundName);
@@ -125,7 +125,7 @@ const keyToDrum = {
   z: "kick",
   s: "snare",
   h: "hihat",
-  d: "rim",
+  r: "rim",
 };
 
 const soundManager = createSoundSources();
@@ -149,6 +149,9 @@ const domElements = {
   modalBtnContainer: document.getElementById("modalBtnContainer"),
   modalYes: document.getElementById("yesBtn"),
   modalNo: document.getElementById("noBtn"),
+  drawBtn: document.getElementById("drawBtn"),
+  eraseBtn: document.getElementById("eraseBtn"),
+  editStateContainer: document.querySelector(".edit-state-container"),
   events: ["click", "mousedown", "mouseup", "mousemove", "keypress"],
   handleDrumLabelClick: (array) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
@@ -195,25 +198,42 @@ const drumLogic = {
   },
   handleGridEventListeners: (arr) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
+
+    const handleActiveClass = (target) => {
+      if (
+        target.classList.contains("active") &&
+        domElements.sequencerContainer.classList.contains("eraser")
+      ) {
+        toggleState.removeClass(target, "active");
+      }
+    };
+
+    const handleSubdivisionClass = (target, index) => {
+      if (
+        target.classList.contains("subdivision") &&
+        domElements.sequencerContainer.classList.contains("pencil")
+      ) {
+        sequencerState.hasPlayedSound = false;
+        toggleState.addClass(target, "active");
+
+        if (
+          !sequencerState.hasPlayedSound &&
+          target.classList.contains("active")
+        ) {
+          soundManager.play(soundNames[index]);
+          sequencerState.hasPlayedSound = true;
+        }
+      }
+    };
+
     arr.forEach((lane, index) => {
       lane.addEventListener("mousedown", (e) => {
         const target = e.target;
-        if (target.classList.contains("subdivision")) {
-          sequencerState.updateDragging(true);
-          sequencerState.hasPlayedSound = false;
-          target.classList.toggle("active");
-
-          if (
-            !sequencerState.hasPlayedSound &&
-            target.classList.contains("active")
-          ) {
-            soundManager.play(soundNames[index]);
-            sequencerState.hasPlayedSound = true;
-          }
-        }
+        sequencerState.updateDragging(true);
+        handleActiveClass(target);
+        handleSubdivisionClass(target, index);
       });
     });
-    console.log(`hey1`);
   },
   handleBeatCount: function () {
     new Tone.Loop((time) => {
@@ -401,6 +421,98 @@ const transportItems = {
   },
 };
 
+const editModeHandler = () => {
+  const elements = {
+    currentMode: null,
+    drawButton: domElements.drawBtn,
+    eraseBtn: domElements.eraseBtn,
+
+    addClass(element, className) {
+      if (!element.classList.contains(className))
+        element.classList.add(className);
+    },
+
+    removeClass(element, className) {
+      if (element.classList.contains(className))
+        element.classList.remove(className);
+    },
+
+    handleModeToggle(mode) {
+      if (mode === "draw") {
+        this.addClass(domElements.drawBtn, "on");
+        this.removeClass(domElements.eraseBtn, "on");
+        this.addClass(domElements.sequencerContainer, "pencil");
+        this.removeClass(domElements.sequencerContainer, "eraser");
+      } else if (mode === "erase") {
+        this.addClass(domElements.eraseBtn, "on");
+        this.removeClass(domElements.drawBtn, "on");
+        this.addClass(domElements.sequencerContainer, "eraser");
+        this.removeClass(domElements.sequencerContainer, "pencil");
+      }
+    },
+
+    handleEditStateClick(e) {
+      const target = e.target;
+      if (target.id === "drawBtn") {
+        this.handleModeToggle("draw");
+      } else if (target.id === "eraseBtn") {
+        this.handleModeToggle("erase");
+      }
+    },
+
+    handleKeyDown(e) {
+      const key = e.key.toLowerCase();
+      if (key === "d") {
+        this.handleModeToggle("draw");
+      } else if (key === "e") {
+        this.handleModeToggle("erase");
+      }
+    },
+
+    handleMouseDown(e) {
+      if (e.shiftKey) {
+        sequencerState.isDragging = true;
+        const target = e.target;
+        if (domElements.sequencerContainer.classList.contains("pencil")) {
+          this.currentMode = "draw";
+          toggleState.addClass(target, "active");
+        } else if (
+          domElements.sequencerContainer.classList.contains("eraser")
+        ) {
+          this.currentMode = "erase";
+          toggleState.removeClass(target, "active");
+        }
+      }
+    },
+
+    handleMouseMove(e) {
+      if (sequencerState.isDragging && e.shiftKey) {
+        const target = e.target;
+        if (this.currentMode === "draw") {
+          toggleState.addClass(target, "active");
+        } else if (this.currentMode === "erase") {
+          toggleState.removeClass(target, "active");
+        }
+      }
+    },
+
+    handleModalClick(e) {
+      if (e.target.id === "yesBtn") {
+        transportItems.clearPattern();
+        setTimeout(() => {
+          domElements.closeModal();
+        }, 50);
+      } else {
+        domElements.closeModal();
+      }
+    },
+  };
+
+  return elements;
+};
+
+const toggleState = editModeHandler();
+
 const handleClickEvents = () => {
   const buttonConfig = {
     playBtn: transportItems.startSequence,
@@ -419,33 +531,32 @@ const handleClickEvents = () => {
   });
 };
 
+domElements.editStateContainer.addEventListener("click", (e) => {
+  toggleState.handleEditStateClick(e);
+});
+
+document.addEventListener("keydown", (e) => {
+  toggleState.handleKeyDown(e);
+});
+
 domElements.modalBtnContainer.addEventListener("click", (e) => {
-  if (e.target.id === "yesBtn") {
-    transportItems.clearPattern();
-    setTimeout(() => {
-      domElements.closeModal();
-    }, 50);
-  } else {
-    domElements.closeModal();
-  }
+  toggleState.handleModalClick(e);
 });
 
-domElements.sequencerContainer.addEventListener("mousemove", (e) => {
-  if (sequencerState.isDragging) {
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    if (target && target.classList.contains("subdivision")) {
-      target.classList.add("active");
-    }
-  }
-  console.log(`hey2`);
-});
-
-domElements.sequencerContainer.addEventListener("mouseup", (e) => {
-  e.preventDefault();
+const handleMouseUp = () => {
   sequencerState.isDragging = false;
-  sequencerState.hasPlayedSound = false;
-  console.log(`hey3`);
-});
+  toggleState.currentMode = null;
+};
+
+domElements.sequencerContainer.addEventListener(
+  "mousedown",
+  toggleState.handleMouseDown
+);
+domElements.sequencerContainer.addEventListener(
+  "mousemove",
+  toggleState.handleMouseMove
+);
+document.addEventListener("mouseup", handleMouseUp);
 
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(

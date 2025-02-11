@@ -73,6 +73,9 @@ ul {
 
 img {
   max-width: 100%;
+  user-drag: none;  
+  -webkit-user-drag: none; 
+  pointer-events: auto; 
 }
 
 .no-select {
@@ -224,6 +227,15 @@ span.tempo-display {
   justify-content: center;
   align-self: center;
   cursor: pointer;
+}
+
+
+.edit-state-container .draw.on {
+  background-image: url('./DRAW-fill.svg');
+}
+
+.edit-state-container .erase.on {
+  background-image: url('./ERASE-fill.svg');
 }
 
 .pattern-button-container {
@@ -384,7 +396,15 @@ p.beat-count {
   grid-column: 2 / span 36;
   grid-row: 2 / span 15;
   border-bottom: 2px solid black;
+  
+}
+
+.pencil {
   cursor: url("../assets/pencil-lower-left\ 1.png"), auto;
+}
+
+.eraser {
+  cursor: url("../assets/Eraser.png"), auto;
 }
 
 .kick-lane,

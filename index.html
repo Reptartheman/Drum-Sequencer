@@ -61,12 +61,12 @@
         </div> -->
       </div>
 
-      <div class="edit-state-container">
-        <div id="drawBtn" class="edit-option-btn">
-          <img src="./assets/DRAW-inactive.svg" alt="enable draw">
+      <div id="editStateContainer" class="edit-state-container">
+        <div class="edit-option-btn">
+          <img id="drawBtn" class="draw on" src="./assets/DRAW-inactive.svg" alt="enable draw">
         </div>
-        <div id="eraseBtn" class="edit-option-btn">
-          <img src="./assets/ERASE-inactive.svg" alt="enable draw">
+        <div  class="edit-option-btn">
+          <img id="eraseBtn" class="erase" src="./assets/ERASE-inactive.svg" alt="enable draw">
         </div>
       </div>
 
@@ -109,7 +109,7 @@
         </div>
         <div id="rimLabel" class="drum-label-container RIM-label">
           <p id="rim" class="drum-label">RIM</p>
-          <kbd>(D)</kbd>
+          <kbd>(R)</kbd>
         </div>
         <div id="snareLabel" class="drum-label-container SNARE-label">
           <p id="snare" class="drum-label">SNARE</p>
@@ -147,7 +147,7 @@
         </div>
       </section>
 
-      <div id="drums" class="drum-track drum-grid">
+      <div id="drums" class="drum-track drum-grid pencil">
         <div id="hiHatLane" class="drum-lane hh-lane"></div>
         <div id="rimLane" class="drum-lane rim-lane"></div>
         <div id="snareLane" class="drum-lane snare-lane"></div>
