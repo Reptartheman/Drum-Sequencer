@@ -72,8 +72,7 @@ ul {
 }
 
 img {
-  max-width: 100%;
-  user-drag: none;  
+  max-width: 100%; 
   -webkit-user-drag: none; 
   pointer-events: auto; 
 }
@@ -400,7 +399,7 @@ p.beat-count {
 }
 
 .pencil {
-  cursor: url("../assets/pencil-lower-left\ 1.png"), auto;
+  cursor: url("../assets/pencil.png"), auto;
 }
 
 .eraser {

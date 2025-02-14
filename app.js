@@ -95,10 +95,10 @@ const sequencerState = createSequencerState();
 
 const createSoundSources = () => {
   const sources = {
-    kick: new Tone.Player("./sounds/kick.wav").toDestination(),
-    snare: new Tone.Player("./sounds/snare.wav").toDestination(),
-    hihat: new Tone.Player("./sounds/hihat.wav").toDestination(),
-    rim: new Tone.Player("./sounds/rim.wav").toDestination(),
+    kick: new Tone.Player("/kick.wav").toDestination(),
+    snare: new Tone.Player("/snare.wav").toDestination(),
+    hihat: new Tone.Player("/hihat.wav").toDestination(),
+    rim: new Tone.Player("/rim.wav").toDestination(),
     metronome: new Tone.Synth().toDestination(),
   };
 
@@ -304,18 +304,15 @@ const transportItems = {
   exportButton: document.getElementById("exportButton"),
   startSequence: () => {
     sequencerState.transport.start();
-    console.log(sequencerState.transport.position);
   },
   pauseSequence: () => {
     sequencerState.transport.pause();
-    console.log(sequencerState.transport.position);
   },
   stopSequence: function () {
     sequencerState.transport.stop();
     drumLogic.setBeatBlock();
     sequencerState.transport.position = "0:0:0";
     sequencerState.beatCounter = 0;
-    console.log(sequencerState.transport.position);
   },
   clearPattern: () => {
     const drums = document.getElementById("drums");
@@ -414,10 +411,9 @@ const transportItems = {
         document.body.removeChild(a);
       }
 
-      console.log("File saved successfully!");
-    } catch (error) {
-      console.error("Error saving file:", error);
-    }
+          } catch (error) {
+            alert(error);
+          }
   },
 };
 
