@@ -4,24 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BeatSketch-DRUMS</title>
-    <link rel="stylesheet" href="./assets/style.css" />
-    <link rel="preload" href="./assets/Logo_update_1.svg" as="image" />
-    <link rel="preload" href="./assets/Pause.svg" as="image" />
-    <link rel="preload" href="./assets/GlobalPlay.svg" as="image" />
-    <link rel="preload" href="./assets/Pause.svg" as="image" />
-    <link rel="icon" type="image/icon" href="./assets/LOGO.png" />
+    <link rel="preload" href="/assets/Logo_update_1-C6jJDHzH.svg" as="image" />
+    <link rel="preload" href="/assets/Pause-C4XRXnNq.svg" as="image" />
+    <link rel="preload" href="/assets/GlobalPlay-OZ42USn9.svg" as="image" />
+    <link rel="preload" href="/assets/Pause-C4XRXnNq.svg" as="image" />
+    <link rel="icon" type="image/icon" href="/assets/LOGO-CzDRq6Y5.png" />
     <script
       defer
       type="module"
       src="https://unpkg.com/wired-elements?module"
     ></script>
-    <script defer type="module" src="/roughCanvas.js"></script>
-    <script defer type="module" src="/app.js"></script>
+    <script type="module" crossorigin src="/assets/index-C1gX6Vku.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DqR-UNdy.css">
   </head>
   <body class="no-select">
     <header class="header">
       <div class="logo-container">
-        <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy" />
+        <img class="logo" src="/assets/Logo_update_1-C6jJDHzH.svg" loading="lazy" />
       </div>
     </header>
 
@@ -38,23 +37,23 @@
         ></svg>
 
         <div class="tempo-btn" elevation="2" id="decrementTempo">
-          <img src="./assets/DOWNTEMPO.svg" alt="tempo slower">
+          <img src="data:image/svg+xml,%3csvg%20width='101'%20height='103'%20viewBox='0%200%20101%20103'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M2.00003%203.31936C28.0216%201.7204%2053.8301%201.59046%2097.7542%202.85014M97.5266%202.88262C97.0125%2027.4554%2099.1426%2057.2419%2097.6968%20100.215M97.1289%2096.6961C69.5272%2096.947%2043.33%2097.64%203.00865%2099.396M4.99543%2099.8435C3.58372%2071.5008%203.48877%2042.1943%203.43323%203.31936'%20stroke='black'%20stroke-width='4'%20stroke-linecap='round'/%3e%3cpath%20d='M43.0938%2056.75C39.9688%2056.75%2038.4062%2055.9375%2038.4062%2054.3125C38.4062%2053.5%2038.75%2052.9375%2039.4375%2052.625C40.1875%2052.3125%2041.4375%2052.0312%2043.1875%2051.7812C45%2051.5312%2047.25%2051.1562%2049.9375%2050.6562C52.6875%2050.1562%2055.5625%2049.75%2058.5625%2049.4375C59.8125%2049.4375%2060.875%2049.6562%2061.75%2050.0938C63%2050.7188%2063.625%2051.4688%2063.625%2052.3438C63.625%2052.6562%2063.4688%2053.0625%2063.1562%2053.5625C62.9062%2054.0625%2062.2188%2054.5%2061.0938%2054.875L43.0938%2056.75Z'%20fill='black'/%3e%3c/svg%3e" alt="tempo slower">
         </div>
         <span id="tempoDisplay" class="tempo-display"> 120 BPM </span>
         <div class="tempo-btn" elevation="2" id="incrementTempo">
-          <img src="./assets/UPTEMPO.svg" alt="tempo faster">
+          <img src="data:image/svg+xml,%3csvg%20width='101'%20height='103'%20viewBox='0%200%20101%20103'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M2.00002%203.31936C28.0216%201.7204%2053.83%201.59046%2097.7542%202.85014M97.5266%202.88262C97.0125%2027.4554%2099.1426%2057.2419%2097.6968%20100.215M97.1289%2096.6961C69.5272%2096.947%2043.33%2097.64%203.00863%2099.396M4.99541%2099.8435C3.58371%2071.5008%203.48876%2042.1943%203.43322%203.31936'%20stroke='black'%20stroke-width='4'%20stroke-linecap='round'/%3e%3cpath%20d='M46.0156%2033.8125C46.0156%2032.625%2047.1094%2032.0312%2049.2969%2032.0312C50.3594%2032.0312%2051.0469%2032.25%2051.3594%2032.6875C51.6719%2033.0625%2051.9219%2033.7188%2052.1094%2034.6562C52.2969%2035.5938%2052.4844%2036.6562%2052.6719%2037.8438C52.8594%2039.0312%2053.0156%2040.2812%2053.1406%2041.5938C53.3281%2042.9062%2053.4844%2044.1562%2053.6094%2045.3438C53.7969%2046.5312%2053.8906%2047.3438%2053.8906%2047.7812H74.5156C74.5156%2050.2188%2071.5781%2051.625%2065.7031%2052C64.0781%2052.0625%2062.5156%2052.125%2061.0156%2052.1875C56.9531%2052.25%2054.5781%2052.375%2053.8906%2052.5625C53.7656%2053.4375%2053.7031%2054.3125%2053.7031%2055.1875C53.7031%2056%2053.7656%2057.0625%2053.8906%2058.375C54.0156%2059.6875%2054.2344%2061.3125%2054.5469%2063.25C55.1719%2067.1875%2055.4844%2069.8438%2055.4844%2071.2188C55.4844%2072.5312%2055.4531%2073.5625%2055.3906%2074.3125C54.1406%2075.3125%2052.7656%2075.8125%2051.2656%2075.8125C50.0781%2075.8125%2049.3906%2075.3125%2049.2031%2074.3125C49.0781%2073%2048.9531%2071.5%2048.8281%2069.8125C48.7031%2068.0625%2048.5156%2066.25%2048.2656%2064.375C47.6406%2059.6875%2046.8906%2056.25%2046.0156%2054.0625C44.3281%2054.0625%2042.3281%2054.4062%2040.0156%2055.0938C35.3281%2056.4688%2032.0156%2057.1875%2030.0781%2057.25C28.2031%2057.25%2027.2656%2056.4375%2027.2656%2054.8125C27.2656%2053.125%2030.3906%2052.125%2036.6406%2051.8125C40.3906%2051.5625%2042.8906%2051.25%2044.1406%2050.875C45.3906%2050.5%2046.0156%2050%2046.0156%2049.375V33.8125Z'%20fill='black'/%3e%3c/svg%3e" alt="tempo faster">
         </div>
       </div>
 
       <div class="transport-buttons">
         <div id="stopBtn" class="transport-btn stop-container">
-          <img src="./assets/Stop.svg" alt="stop button" loading="lazy" />
+          <img src="/assets/Stop-BeiQrejR.svg" alt="stop button" loading="lazy" />
         </div>
         <div id="pauseBtn" class="transport-btn pause-container">
-          <img src="./assets/Pause.svg" alt="pause button" loading="lazy" />
+          <img src="/assets/Pause-C4XRXnNq.svg" alt="pause button" loading="lazy" />
         </div>
         <div id="playBtn" class="transport-btn play-container">
-          <img src="./assets/GlobalPlay.svg" alt="play button" loading="lazy" />
+          <img src="/assets/GlobalPlay-OZ42USn9.svg" alt="play button" loading="lazy" />
         </div>
         <!-- <div class="transport-btn cycle-container">
           <img src="./assets/GlobalRecord.svg" alt="cycle button" />
@@ -63,24 +62,24 @@
 
       <div id="editStateContainer" class="edit-state-container">
         <div class="edit-option-btn">
-          <img id="drawBtn" class="draw on" src="./assets/DRAW-inactive.svg" alt="enable draw">
+          <img id="drawBtn" class="draw on" src="/assets/DRAW-inactive-CWl8qo4v.svg" alt="enable draw">
         </div>
         <div  class="edit-option-btn">
-          <img id="eraseBtn" class="erase" src="./assets/ERASE-inactive.svg" alt="enable draw">
+          <img id="eraseBtn" class="erase" src="/assets/ERASE-inactive-DCEV3Vdp.svg" alt="enable draw">
         </div>
       </div>
 
       <div class="pattern-button-container">
         <div class="option-button-container">
           <img
-            src="./assets/CLEAR.svg"
+            src="/assets/CLEAR-CVnsicay.svg"
             class="pattern-option-button"
             id="clearButton"
           />
         </div>
         <div class="option-button-container">
           <img
-            src="./assets/EXPORT.svg"
+            src="/assets/EXPORT-BESSHj9p.svg"
             class="pattern-option-button"
             id="exportButton"
           />
