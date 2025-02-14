@@ -1,8 +1,7 @@
-drumLibrary.js
-oldScript.js
-test.js
-things.txt
-node_modules
-oldIndex.html
+# Ignore the build output directory
+dist/
+
+# Ignore the lock file for dependencies
 package-lock.json
-package.json
+node_modules/
+things.txt
