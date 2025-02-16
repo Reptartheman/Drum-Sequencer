@@ -77,14 +77,23 @@ img {
   pointer-events: auto; 
 }
 
+
+
 .no-select {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none; 
+  -webkit-user-select: none; 
+  -khtml-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
+  user-select: none; 
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4vh;
+  position: relative;
 }
 
 .logo-container {
@@ -101,6 +110,17 @@ img {
   width: var(--logo-size);
 }
 
+.how-to-container {
+  position: relative;
+  right: var(--size-6);
+}
+
+.how-to-use {
+  font-size: var(--size-16);
+  text-decoration: none;
+  color: var(--beat-border);
+}
+
 .test-border {
   border: var(--test-border);
 }
@@ -108,14 +128,11 @@ img {
 .test-border2 {
   border: var(--test-border2);
 }
-/* HEADER */
 
-.header {
-  height: 4vh;
-  position: relative;
-}
 
-/* TRANSPORT */
+
+
+
 
 .global-transport {
   margin-bottom: 0.5%;
@@ -137,8 +154,47 @@ img {
   gap: var(--size-24);
 }
 
-.tempo-slider-container {
+input[type='range'] {
+  -webkit-appearance: none;
+  background-color: transparent;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background-image: url('./FADERKnob.png');
+  background-position: center;
+  background-size: contain;
+  height: 36px;
+  width: 20px;
   cursor: pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+  -webkit-appearance: none;
+  background-image: url('./FADERKnob.png');
+  background-position: center;
+  background-size: contain;
+  height: 36px;
+  width: 20px;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background-image: url('./FADERLine.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 10%;
+}
+
+input[type='range']::-moz-range-track {
+  background-image: url('./FADERLine.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 10%;
 }
 
 span.tempo-display {
@@ -159,12 +215,11 @@ span.tempo-display {
   background-color: var(--beatTwo-backGround);
 }
 
-/* styles.css */
 
-/* Metronome button styling */
 
-/* .metronome-container {
-} */
+
+
+
 
 .metronome-container {
   background-image: url("./Click-notactiveR.svg");
@@ -454,3 +509,5 @@ p.beat-count {
   background-size: cover;
   background-repeat: no-repeat;
 }
+
+

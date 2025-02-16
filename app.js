@@ -1,22 +1,18 @@
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { renderTempoSlider } from "./roughCanvas";
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   drumKeysHandler();
   handleClickEvents();
-  renderTempoSlider();
   domElements.handleDrumLabelClick(drumLabels);
   drumLogic.renderGridSubdivisions();
   drumLogic.handleGridEventListeners(drumLanes);
   drumLogic.addSoundsToGrid(drumLanes);
   drumLogic.handleBeatCount();
   drumLogic.setBeatBlock();
-  sequencerState.turnOnSequencer();
 });
 
 const midi = new Midi();
 const draw = Tone.getDraw();
-const tempoSlider = renderTempoSlider();
 let metronomeLoop;
 
 const createSequencerState = () => {
@@ -27,6 +23,7 @@ const createSequencerState = () => {
     hasPlayedSound: false,
     beatCounter: 0,
     isMetronomeOn: false,
+    isPlaying: false,
     totalSteps: 32,
 
     updateBPM(newBPM) {
@@ -43,14 +40,6 @@ const createSequencerState = () => {
     updateBeatCount(count) {
       this.beatCounter = count % this.totalSteps;
       return this;
-    },
-    async turnOnSequencer() {
-      let initialized = false;
-      if (!initialized) {
-        await Tone.start();
-        soundManager.getAllSources();
-        initialized = true;
-      }
     },
   };
   state.transport.loop = true;
@@ -149,10 +138,6 @@ const domElements = {
   modalBtnContainer: document.getElementById("modalBtnContainer"),
   modalYes: document.getElementById("yesBtn"),
   modalNo: document.getElementById("noBtn"),
-  drawBtn: document.getElementById("drawBtn"),
-  eraseBtn: document.getElementById("eraseBtn"),
-  editStateContainer: document.querySelector(".edit-state-container"),
-  events: ["click", "mousedown", "mouseup", "mousemove", "keypress"],
   handleDrumLabelClick: (array) => {
     const soundNames = ["kick", "snare", "hihat", "rim"];
     array.forEach((label, index) => {
@@ -302,6 +287,10 @@ const transportItems = {
   tempoDisplay: document.getElementById("tempoDisplay"),
   clearButton: document.getElementById("clearButton"),
   exportButton: document.getElementById("exportButton"),
+  drawBtn: document.getElementById("drawBtn"),
+  eraseBtn: document.getElementById("eraseBtn"),
+  editStateContainer: document.querySelector(".edit-state-container"),
+  tempoSlider: document.getElementById("tempoSlider"),
   startSequence: () => {
     sequencerState.transport.start();
   },
@@ -353,6 +342,23 @@ const transportItems = {
       if (metronomeLoop) {
         metronomeLoop.mute = true;
       }
+    }
+  },
+  togglePlayPause() {
+    if (!sequencerState.isPlaying) {
+      this.startSequence();
+      sequencerState.isPlaying = true;
+      console.log(
+        "Sequence started via toggle, isPlaying:",
+        sequencerState.isPlaying
+      );
+    } else {
+      this.pauseSequence();
+      sequencerState.isPlaying = false;
+      console.log(
+        "Sequence paused via toggle, isPlaying:",
+        sequencerState.isPlaying
+      );
     }
   },
 
@@ -410,18 +416,17 @@ const transportItems = {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       }
-
-          } catch (error) {
-            alert(error);
-          }
+    } catch (error) {
+      alert(error);
+    }
   },
 };
 
 const editModeHandler = () => {
-  const elements = {
+  const editors = {
     currentMode: null,
-    drawButton: domElements.drawBtn,
-    eraseBtn: domElements.eraseBtn,
+    drawButton: transportItems.drawBtn,
+    eraseBtn: transportItems.eraseBtn,
 
     addClass(element, className) {
       if (!element.classList.contains(className))
@@ -435,13 +440,13 @@ const editModeHandler = () => {
 
     handleModeToggle(mode) {
       if (mode === "draw") {
-        this.addClass(domElements.drawBtn, "on");
-        this.removeClass(domElements.eraseBtn, "on");
+        this.addClass(transportItems.drawBtn, "on");
+        this.removeClass(transportItems.eraseBtn, "on");
         this.addClass(domElements.sequencerContainer, "pencil");
         this.removeClass(domElements.sequencerContainer, "eraser");
       } else if (mode === "erase") {
-        this.addClass(domElements.eraseBtn, "on");
-        this.removeClass(domElements.drawBtn, "on");
+        this.addClass(transportItems.eraseBtn, "on");
+        this.removeClass(transportItems.drawBtn, "on");
         this.addClass(domElements.sequencerContainer, "eraser");
         this.removeClass(domElements.sequencerContainer, "pencil");
       }
@@ -458,6 +463,11 @@ const editModeHandler = () => {
 
     handleKeyDown(e) {
       const key = e.key.toLowerCase();
+
+      if (e.keyCode === 32) {
+        transportItems.togglePlayPause();
+      }
+
       if (key === "d") {
         this.handleModeToggle("draw");
       } else if (key === "e") {
@@ -504,7 +514,7 @@ const editModeHandler = () => {
     },
   };
 
-  return elements;
+  return editors;
 };
 
 const toggleState = editModeHandler();
@@ -527,7 +537,7 @@ const handleClickEvents = () => {
   });
 };
 
-domElements.editStateContainer.addEventListener("click", (e) => {
+transportItems.editStateContainer.addEventListener("click", (e) => {
   toggleState.handleEditStateClick(e);
 });
 
@@ -554,6 +564,13 @@ domElements.sequencerContainer.addEventListener(
 );
 document.addEventListener("mouseup", handleMouseUp);
 
+const updateBPM = (newBPM) => {
+  sequencerState.updateBPM(newBPM);
+  transportItems.tempoSlider.value = newBPM;
+  updateTempoDisplay();
+};
+
+
 function updateTempoDisplay() {
   transportItems.tempoDisplay.textContent = `${Math.round(
     sequencerState.transport.bpm.value
@@ -562,47 +579,53 @@ function updateTempoDisplay() {
 
 let intervalId;
 
-const startAdjustingTempo = (adjustmentFunction) => {
-  adjustmentFunction();
-  intervalId = setInterval(adjustmentFunction, 100);
-};
+  const startAdjustingTempo = (adjustmentFunction) => {
+    adjustmentFunction();
+    intervalId = setInterval(adjustmentFunction, 100);
+  };
 
-const stopAdjustingTempo = () => {
-  clearInterval(intervalId);
-};
+  const stopAdjustingTempo = () => {
+    clearInterval(intervalId);
+  };
 
-transportItems.incrementTempoButton.addEventListener("mousedown", () => {
-  startAdjustingTempo(() => {
-    sequencerState.transport.bpm.value += 1;
-    tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
-    updateTempoDisplay();
-  });
-});
 
-transportItems.incrementTempoButton.addEventListener(
-  "mouseup",
-  stopAdjustingTempo
-);
-transportItems.incrementTempoButton.addEventListener(
-  "mouseleave",
-  stopAdjustingTempo
-);
-
-transportItems.decrementTempoButton.addEventListener("mousedown", () => {
-  startAdjustingTempo(() => {
-    if (sequencerState.transport.bpm.value > 1) {
-      sequencerState.transport.bpm.value -= 1;
-      tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
+  transportItems.incrementTempoButton.addEventListener("mousedown", () => {
+    startAdjustingTempo(() => {
+      sequencerState.transport.bpm.value += 1;
+      transportItems.tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
       updateTempoDisplay();
-    }
+    });
   });
-});
 
-transportItems.decrementTempoButton.addEventListener(
-  "mouseup",
-  stopAdjustingTempo
-);
-transportItems.decrementTempoButton.addEventListener(
-  "mouseleave",
-  stopAdjustingTempo
-);
+  transportItems.decrementTempoButton.addEventListener("mousedown", () => {
+    startAdjustingTempo(() => {
+      if (sequencerState.transport.bpm.value > 1) {
+        sequencerState.transport.bpm.value -= 1;
+        domElements.tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
+        updateTempoDisplay();
+      }
+    });
+  });
+
+  transportItems.incrementTempoButton.addEventListener(
+    "mouseup",
+    stopAdjustingTempo
+  );
+  transportItems.incrementTempoButton.addEventListener(
+    "mouseleave",
+    stopAdjustingTempo
+  );
+
+  transportItems.decrementTempoButton.addEventListener(
+    "mouseup",
+    stopAdjustingTempo
+  );
+  transportItems.decrementTempoButton.addEventListener(
+    "mouseleave",
+    stopAdjustingTempo
+  );
+
+  transportItems.tempoSlider.addEventListener("change", (e) => {
+    updateBPM(parseInt(e.target.value));
+  });
+

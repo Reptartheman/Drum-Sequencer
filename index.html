@@ -15,27 +15,21 @@
       type="module"
       src="https://unpkg.com/wired-elements?module"
     ></script>
-    <script defer type="module" src="/roughCanvas.js"></script>
     <script defer type="module" src="/app.js"></script>
   </head>
   <body class="no-select">
     <header class="header">
       <div class="logo-container">
-        <img class="logo" src="./assets/Logo_update_1.svg" loading="lazy" />
+        <img class="logo" src="./assets/BEATSKETCH_DRUMS.svg" loading="lazy" />
+      </div>
+      <div class="how-to-container">
+        <a class="how-to-use" href="" target="_blank">How to use >></a>
       </div>
     </header>
 
     <section class="global-transport">
       <div class="tempo-container">
-        <svg
-          class="tempo-slider-container"
-          id="tempoSlider"
-          xmlns="http://www.w3.org/2000/svg"
-          width="200"
-          height="40"
-          viewBox="0 0 160 28"
-          fill="none"
-        ></svg>
+        <input id="tempoSlider" type="range" min="20" max="260" step="1" class="slider" value="120" />
 
         <div class="tempo-btn" elevation="2" id="decrementTempo">
           <img src="./assets/DOWNTEMPO.svg" alt="tempo slower">
@@ -56,9 +50,6 @@
         <div id="playBtn" class="transport-btn play-container">
           <img src="./assets/GlobalPlay.svg" alt="play button" loading="lazy" />
         </div>
-        <!-- <div class="transport-btn cycle-container">
-          <img src="./assets/GlobalRecord.svg" alt="cycle button" />
-        </div> -->
       </div>
 
       <div id="editStateContainer" class="edit-state-container">
