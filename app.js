@@ -601,7 +601,7 @@ let intervalId;
     startAdjustingTempo(() => {
       if (sequencerState.transport.bpm.value > 1) {
         sequencerState.transport.bpm.value -= 1;
-        domElements.tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
+        transportItems.tempoSlider.value = Math.round(sequencerState.transport.bpm.value);
         updateTempoDisplay();
       }
     });

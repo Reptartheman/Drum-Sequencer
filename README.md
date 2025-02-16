@@ -6,17 +6,7 @@
   <img src="./assets/BEATSKETCH_DRUMS.svg" alt="BeatSketch Logo" width="200"/>
 </p>
 
-<p text-align="center">
-  <a href="https://tonejs.github.io/">
-    <img src="https://img.shields.io/badge/Built%20with-Tone.js-yellow" alt="Built with Tone.js"/>
-  </a>
-  <a href="https://wiredjs.com/">
-    <img src="https://img.shields.io/badge/Built%20with-Wired%20Elements-orange" alt="Built with Wired Elements"/>
-  </a>
-  <a href="https://roughjs.com/">
-    <img src="https://img.shields.io/badge/Built%20with-Rough.js-blue" alt="Built with Rough.js"/>
-  </a>
-</p>
+
 
 
 # BeatSketch - Drums
@@ -24,7 +14,13 @@ This is the Drum-Sequencer portion of my future app, BeatSketch.
 
 Overview
 
-This project is a browser-based drum sequencer that allows users to create and play rhythmic patterns in a loop-based sequencer. Users can interact with the sequencer by highlighting steps inside the drum-grid, and the application visually represents the currently playing step in real-time. The sequencer uses Tone.js for audio scheduling and playback. Wired-Elements for the 'Clear Sketch' modal. All other design elements are created by Jeff using Excalidraw and the Figma plugin 'Roughly' which is built on top of RoughJS.
+This project is a browser-based drum sequencer that allows users to create and play rhythmic patterns in a loop-based sequencer. Users can interact with the sequencer by highlighting steps inside the drum-grid, and the application visually represents the currently playing step in real-time. 
+
+
+- The sequencer uses Tone.js for audio scheduling and playback. 
+- Wired-Elements for the 'Clear Sketch' modal. 
+- All other design elements are created by Jeff using Excalidraw and the 
+- Figma plugin 'Roughly' which is built on top of RoughJS.
 
 # Current Features
 
@@ -98,7 +94,21 @@ Adjust settings (e.g., tempo, patterns) as needed.
   - I am looking for a small team of like-minded developers to make this app come to life. Please get in touch if you are interested in joining me on the BeatSketch journey!
 
 
+## Credits
 
-License
+<p text-align="center">
+  <a href="https://tonejs.github.io/">
+    <img src="https://img.shields.io/badge/Built%20with-Tone.js-yellow" alt="Built with Tone.js"/>
+  </a>
+  <a href="https://wiredjs.com/">
+    <img src="https://img.shields.io/badge/Built%20with-Wired%20Elements-orange" alt="Built with Wired Elements"/>
+  </a>
+  <a href="https://roughjs.com/">
+    <img src="https://img.shields.io/badge/Built%20with-Rough.js-blue" alt="Built with Rough.js"/>
+  </a>
+</p>
+
+
+### License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
