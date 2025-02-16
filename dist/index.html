@@ -14,27 +14,22 @@
       type="module"
       src="https://unpkg.com/wired-elements?module"
     ></script>
-    <script type="module" crossorigin src="/assets/index-C1gX6Vku.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DqR-UNdy.css">
+    <script type="module" crossorigin src="/assets/index-DpwFRre6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DNSOxnun.css">
   </head>
   <body class="no-select">
     <header class="header">
       <div class="logo-container">
-        <img class="logo" src="/assets/Logo_update_1-C6jJDHzH.svg" loading="lazy" />
+        <img class="logo" src="/assets/BEATSKETCH_DRUMS-BAP8AcFQ.svg" loading="lazy" />
+      </div>
+      <div class="how-to-container">
+        <a class="how-to-use" href="" target="_blank">How to use >></a>
       </div>
     </header>
 
     <section class="global-transport">
       <div class="tempo-container">
-        <svg
-          class="tempo-slider-container"
-          id="tempoSlider"
-          xmlns="http://www.w3.org/2000/svg"
-          width="200"
-          height="40"
-          viewBox="0 0 160 28"
-          fill="none"
-        ></svg>
+        <input id="tempoSlider" type="range" min="20" max="260" step="1" class="slider" value="120" />
 
         <div class="tempo-btn" elevation="2" id="decrementTempo">
           <img src="data:image/svg+xml,%3csvg%20width='101'%20height='103'%20viewBox='0%200%20101%20103'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M2.00003%203.31936C28.0216%201.7204%2053.8301%201.59046%2097.7542%202.85014M97.5266%202.88262C97.0125%2027.4554%2099.1426%2057.2419%2097.6968%20100.215M97.1289%2096.6961C69.5272%2096.947%2043.33%2097.64%203.00865%2099.396M4.99543%2099.8435C3.58372%2071.5008%203.48877%2042.1943%203.43323%203.31936'%20stroke='black'%20stroke-width='4'%20stroke-linecap='round'/%3e%3cpath%20d='M43.0938%2056.75C39.9688%2056.75%2038.4062%2055.9375%2038.4062%2054.3125C38.4062%2053.5%2038.75%2052.9375%2039.4375%2052.625C40.1875%2052.3125%2041.4375%2052.0312%2043.1875%2051.7812C45%2051.5312%2047.25%2051.1562%2049.9375%2050.6562C52.6875%2050.1562%2055.5625%2049.75%2058.5625%2049.4375C59.8125%2049.4375%2060.875%2049.6562%2061.75%2050.0938C63%2050.7188%2063.625%2051.4688%2063.625%2052.3438C63.625%2052.6562%2063.4688%2053.0625%2063.1562%2053.5625C62.9062%2054.0625%2062.2188%2054.5%2061.0938%2054.875L43.0938%2056.75Z'%20fill='black'/%3e%3c/svg%3e" alt="tempo slower">
@@ -55,9 +50,6 @@
         <div id="playBtn" class="transport-btn play-container">
           <img src="/assets/GlobalPlay-OZ42USn9.svg" alt="play button" loading="lazy" />
         </div>
-        <!-- <div class="transport-btn cycle-container">
-          <img src="./assets/GlobalRecord.svg" alt="cycle button" />
-        </div> -->
       </div>
 
       <div id="editStateContainer" class="edit-state-container">
