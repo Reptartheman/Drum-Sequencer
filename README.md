@@ -3,8 +3,21 @@
 ![Built with Tone.js](https://img.shields.io/badge/Built%20with-Tone.js-yellow)
 
 <p text-align="center">
-  <img src="./assets/Interface.png" alt="BeatSketch Logo" width="200"/>
+  <img src="./assets/BEATSKETCH_DRUMS.svg" alt="BeatSketch Logo" width="200"/>
 </p>
+
+<p text-align="center">
+  <a href="https://tonejs.github.io/">
+    <img src="https://img.shields.io/badge/Built%20with-Tone.js-yellow" alt="Built with Tone.js"/>
+  </a>
+  <a href="https://wiredjs.com/">
+    <img src="https://img.shields.io/badge/Built%20with-Wired%20Elements-orange" alt="Built with Wired Elements"/>
+  </a>
+  <a href="https://roughjs.com/">
+    <img src="https://img.shields.io/badge/Built%20with-Rough.js-blue" alt="Built with Rough.js"/>
+  </a>
+</p>
+
 
 # BeatSketch - Drums
 This is the Drum-Sequencer portion of my future app, BeatSketch.
