@@ -7,9 +7,6 @@
 </p>
 
 # BeatSketch - Drums
-
-
-# BeatSketch - Drums
 This is the Drum-Sequencer portion of my future app, BeatSketch.
 
 Overview
