@@ -3,7 +3,7 @@
 ![Built with Tone.js](https://img.shields.io/badge/Built%20with-Tone.js-yellow)
 
 <p text-align="center">
-  <img src="./assets/LOGO_DRUMS.png" alt="BeatSketch Logo" width="200"/>
+  <img src="./assets/Interface.png" alt="BeatSketch Logo" width="200"/>
 </p>
 
 # BeatSketch - Drums
