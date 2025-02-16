@@ -2,6 +2,13 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Built with Tone.js](https://img.shields.io/badge/Built%20with-Tone.js-yellow)
 
+<p text-align="center">
+  <img src="path/to/your/logo.png" alt="BeatSketch Logo" width="200"/>
+</p>
+
+# BeatSketch - Drums
+
+
 # BeatSketch - Drums
 This is the Drum-Sequencer portion of my future app, BeatSketch.
 
