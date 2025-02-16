@@ -22,6 +22,11 @@ This project is a browser-based drum sequencer that allows users to create and p
 - All other design elements are created by Jeff using Excalidraw and the 
 - Figma plugin 'Roughly' which is built on top of RoughJS.
 
+
+# How to use
+- [![How to use](./assets/LOGO_DRUMS.png)](https://www.loom.com/share/be31963a143d4179bae4acbecc075752?sid=068690d8-9af3-4fe4-b9aa-6efa22d949aa)
+
+
 # Current Features
 
 ## Transport Bar:
