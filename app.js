@@ -133,7 +133,7 @@ const domElements = {
   transportTimeDisplay: document.getElementById("transportTimeDisplay"),
   measuresContainer: document.getElementById("measuresContainer"),
   timeLineItems: document.querySelectorAll(".timeline-item"),
-  modal: document.querySelector("wired-dialog"),
+  modal: document.querySelector(".modal"),
   overlay: document.querySelector(".overlay"),
   modalBtnContainer: document.getElementById("modalBtnContainer"),
   modalYes: document.getElementById("yesBtn"),
@@ -148,11 +148,13 @@ const domElements = {
     });
   },
   openModal: () => {
-    domElements.modal.open = true;
+    domElements.modal.classList.remove("hidden");
+    domElements.overlay.classList.remove("hidden");
   },
   closeModal: () => {
-    domElements.modal.open = false;
-  },
+    domElements.modal.classList.add("hidden");
+    domElements.overlay.classList.add("hidden");
+  }
 };
 const drumLabels = [
   domElements.kickLabel,
@@ -526,6 +528,8 @@ const handleClickEvents = () => {
     stopBtn: transportItems.stopSequence,
     metronomeBtn: transportItems.toggleMetronome.bind(transportItems),
     clearButton: domElements.openModal,
+    yesBtn: transportItems.clearPattern,
+    noBtn: domElements.closeModal,
     exportButton: transportItems.exportMIDI.bind(transportItems),
   };
 

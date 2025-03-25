@@ -10,11 +10,6 @@
     <link rel="preload" href="./assets/GlobalPlay.svg" as="image" />
     <link rel="preload" href="./assets/Pause.svg" as="image" />
     <link rel="icon" type="image/icon" href="./assets/LOGO.png" />
-    <script
-      defer
-      type="module"
-      src="https://unpkg.com/wired-elements?module"
-    ></script>
     <script defer type="module" src="/app.js"></script>
   </head>
   <body class="no-select">
@@ -79,15 +74,23 @@
       </div>
     </section>
 
-    <wired-dialog elevation="2" class="modal">
+  
+    <section class="modal hidden enter-modal">
       <div>
         <h3>Are you sure you want to clear your pattern?</h3>
       </div>
       <div class="modal-btn-container" id="modalBtnContainer">
-        <wired-button class="modal-option-button" id="yesBtn">Yes</wired-button>
-        <wired-button class="modal-option-button" id="noBtn">No</wired-button>
+        <div class="modal-option-button" id="yesBtn">
+          <img src="./assets/YesBtn.svg" alt="yes_button">
+        </div>
+
+        <div class="modal-option-button" id="noBtn">
+          <img src="./assets/NoBtn.svg" alt="no_button">
+        </div>
       </div>
-    </wired-dialog>
+    </section>
+
+    <div class="overlay hidden"></div>
 
     <div class="sequencer-container no-select">
       <div id="metronomeBtn" class="metronome-container">
