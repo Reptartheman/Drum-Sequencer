@@ -22,6 +22,11 @@ This project is a browser-based drum sequencer that allows users to create and p
 - All other design elements are created by Jeff using Excalidraw and the 
 - Figma plugin 'Roughly' which is built on top of RoughJS.
 
+
+# How to use
+- [![How to use](./assets/LOGO_DRUMS.png)](https://www.loom.com/share/be31963a143d4179bae4acbecc075752?sid=068690d8-9af3-4fe4-b9aa-6efa22d949aa)
+
+
 # Current Features
 
 ## Transport Bar:
@@ -99,12 +104,6 @@ Adjust settings (e.g., tempo, patterns) as needed.
 <p text-align="center">
   <a href="https://tonejs.github.io/">
     <img src="https://img.shields.io/badge/Built%20with-Tone.js-yellow" alt="Built with Tone.js"/>
-  </a>
-  <a href="https://wiredjs.com/">
-    <img src="https://img.shields.io/badge/Built%20with-Wired%20Elements-orange" alt="Built with Wired Elements"/>
-  </a>
-  <a href="https://roughjs.com/">
-    <img src="https://img.shields.io/badge/Built%20with-Rough.js-blue" alt="Built with Rough.js"/>
   </a>
 </p>
 
